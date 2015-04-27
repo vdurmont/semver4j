@@ -27,7 +27,6 @@ public class Semver implements Comparable<Semver> {
 
         String[] tokens = value.split("-");
         String build = null;
-        Integer major = null;
         Integer minor = null;
         Integer patch = null;
         try {
@@ -47,7 +46,7 @@ public class Semver implements Comparable<Semver> {
             }
 
             try {
-                major = Integer.valueOf(mainTokens[0]);
+                this.major = Integer.valueOf(mainTokens[0]);
             } catch (NumberFormatException | IndexOutOfBoundsException e) {
                 throw new SemverException("Invalid version (no major version): " + value);
             }
@@ -77,7 +76,6 @@ public class Semver implements Comparable<Semver> {
         } catch (NumberFormatException | IndexOutOfBoundsException e) {
             throw new SemverException("The version is invalid: " + value);
         }
-        this.major = major;
         this.minor = minor;
         this.patch = patch;
 
@@ -250,6 +248,56 @@ public class Semver implements Comparable<Semver> {
     public VersionDiff diff(Semver version) {
         // TODO code me
         return null;
+    }
+
+    public Semver incMajor() {
+        return this.incMajor(1);
+    }
+
+    public Semver incMajor(int increment) {
+        return this.inc(increment, 0, 0);
+    }
+
+    public Semver incMinor() {
+        return this.incMinor(1);
+    }
+
+    public Semver incMinor(int increment) {
+        return this.inc(0, increment, 0);
+    }
+
+    public Semver incPatch() {
+        return this.incPatch(1);
+    }
+
+    public Semver incPatch(int increment) {
+        return this.inc(0, 0, increment);
+    }
+
+    private Semver inc(int majorInc, int minorInc, int patchInc) {
+        StringBuilder sb = new StringBuilder()
+                .append(this.major + majorInc);
+        if (this.minor != null) {
+            sb.append(".").append(this.minor + minorInc);
+        }
+        if (this.patch != null) {
+            sb.append(".").append(this.patch + patchInc);
+        }
+        boolean first = true;
+        for (String suffixToken : this.suffixTokens) {
+            if (first) {
+                sb.append("-");
+                first = false;
+            } else {
+                sb.append(".");
+            }
+            sb.append(suffixToken);
+        }
+        if (this.build != null) {
+            sb.append("+").append(this.build);
+        }
+
+        return new Semver(sb.toString(), this.type);
     }
 
     @Override public boolean equals(Object o) {

@@ -78,6 +78,10 @@ public class Requirement {
             if (token.type == Tokenizer.TokenType.VERSION) {
                 Range range = new Range(new Semver(token.value, type), Range.RangeOperator.EQ);
                 return new Requirement(range, null, null, null);
+            } else if (token.type == Tokenizer.TokenType.HYPHEN) {
+                Tokenizer.Token token3 = iterator.next(); // Note that token3 is before token2!
+                Tokenizer.Token token2 = iterator.next();
+                return hyphenRequirement(token2.value, token3.value, type);
             } else if (token.type.isUnary()) {
                 Tokenizer.Token token2 = iterator.next();
 
@@ -170,6 +174,25 @@ public class Requirement {
             next = (semver.getMajor() + 1) + ".0.0";
         }
         Requirement req2 = new Requirement(new Range(next, Range.RangeOperator.LT), null, null, null);
+
+        return new Requirement(null, req1, RequirementOperator.AND, req2);
+    }
+
+    protected static Requirement hyphenRequirement(String lowerVersion, String upperVersion, Semver.SemverType type) {
+        Semver lower = extrapolateVersion(new Semver(lowerVersion, type));
+        Semver upper = new Semver(upperVersion, type);
+
+        Range.RangeOperator upperOperator = Range.RangeOperator.LTE;
+        if (upper.getMinor() == null || upper.getPatch() == null) {
+            upperOperator = Range.RangeOperator.LT;
+            if (upper.getMinor() == null) {
+                upper = extrapolateVersion(upper).incMajor();
+            } else {
+                upper = extrapolateVersion(upper).incMinor();
+            }
+        }
+        Requirement req1 = new Requirement(new Range(lower, Range.RangeOperator.GTE), null, null, null);
+        Requirement req2 = new Requirement(new Range(upper, upperOperator), null, null, null);
 
         return new Requirement(null, req1, RequirementOperator.AND, req2);
     }

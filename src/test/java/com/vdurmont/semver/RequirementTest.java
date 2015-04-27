@@ -41,7 +41,6 @@ public class RequirementTest {
     @Test public void buildNPM() {
         fail();
 
-        // TODO hyphen ranges
         // TODO ranges (>1.0.0 <=1.2.3)
         // TODO ranges with '||'
         // TODO x and * ranges
@@ -151,27 +150,50 @@ public class RequirementTest {
         caretTest("0.0.*", "0.0.0", "0.1.0");
     }
 
-    private static void tildeTest(String requirement, String lower, String upper) {
-        Requirement req = Requirement.tildeRequirement(requirement, Semver.SemverType.NPM);
-        rangeTest(req, lower, upper);
+    @Test public void hyphenRequirement() {
+        // 1.2.3 - 2.3.4 := >=1.2.3 <=2.3.4
+        hyphenTest("1.2.3", "2.3.4", "1.2.3", "2.3.4", false);
     }
 
-    private static void caretTest(String requirement, String lower, String upper) {
-        Requirement req = Requirement.caretRequirement(requirement, Semver.SemverType.NPM);
-        rangeTest(req, lower, upper);
+    @Test public void hyphenRequirement_with_partial_lower_bound() {
+        // 1.2 - 2.3.4 := >=1.2.0 <=2.3.4
+        hyphenTest("1.2", "2.3.4", "1.2.0", "2.3.4", false);
+        hyphenTest("1.2.x", "2.3.4", "1.2.0", "2.3.4", false);
+        hyphenTest("1.2.*", "2.3.4", "1.2.0", "2.3.4", false);
+
+        // 1 - 2.3.4 := >=1.0.0 <=2.3.4
+        hyphenTest("1", "2.3.4", "1.0.0", "2.3.4", false);
+        hyphenTest("1.x", "2.3.4", "1.0.0", "2.3.4", false);
+        hyphenTest("1.x.x", "2.3.4", "1.0.0", "2.3.4", false);
+        hyphenTest("1.*", "2.3.4", "1.0.0", "2.3.4", false);
+        hyphenTest("1.*.*", "2.3.4", "1.0.0", "2.3.4", false);
     }
 
-    private static void rangeTest(Requirement req, String lower, String upper) {
-        assertNull(req.range);
-        assertEquals(Requirement.RequirementOperator.AND, req.op);
+    @Test public void hyphenRequirement_with_partial_upper_bound() {
+        // 1.2.3 - 2.3 := >=1.2.3 <2.4.0
+        hyphenTest("1.2.3", "2.3", "1.2.3", "2.4.0", true);
+        hyphenTest("1.2.3", "2.3.x", "1.2.3", "2.4.0", true);
+        hyphenTest("1.2.3", "2.3.*", "1.2.3", "2.4.0", true);
 
-        Requirement req1 = req.req1;
-        assertEquals(Range.RangeOperator.GTE, req1.range.op);
-        assertEquals(lower, req1.range.version.getValue());
+        // 1.2.3 - 2 := >=1.2.3 <3.0.0
+        hyphenTest("1.2.3", "2", "1.2.3", "3.0.0", true);
+        hyphenTest("1.2.3", "2.x", "1.2.3", "3.0.0", true);
+        hyphenTest("1.2.3", "2.x.x", "1.2.3", "3.0.0", true);
+        hyphenTest("1.2.3", "2.*", "1.2.3", "3.0.0", true);
+        hyphenTest("1.2.3", "2.*.*", "1.2.3", "3.0.0", true);
+    }
 
-        Requirement req2 = req.req2;
-        assertEquals(Range.RangeOperator.LT, req2.range.op);
-        assertEquals(upper, req2.range.version.getValue());
+    @Test public void buildNPM_with_hyphen() {
+        Requirement[] reqs = new Requirement[]{
+                Requirement.buildNPM("1.2.3-2.3.4"),
+                Requirement.buildNPM("1.2.3 -2.3.4"),
+                Requirement.buildNPM("1.2.3- 2.3.4"),
+                Requirement.buildNPM("1.2.3 - 2.3.4")
+        };
+
+        for (Requirement req : reqs) {
+            rangeTest(req, "1.2.3", "2.3.4", false);
+        }
     }
 
     @Test public void isSatisfiedBy_with_a_range() {
@@ -245,5 +267,35 @@ public class RequirementTest {
         Range range = requirement.range;
         assertTrue(range.version.isEquivalentTo(version));
         assertEquals(operator, range.op);
+    }
+
+    private static void tildeTest(String requirement, String lower, String upper) {
+        Requirement req = Requirement.tildeRequirement(requirement, Semver.SemverType.NPM);
+        rangeTest(req, lower, upper, true);
+    }
+
+    private static void caretTest(String requirement, String lower, String upper) {
+        Requirement req = Requirement.caretRequirement(requirement, Semver.SemverType.NPM);
+        rangeTest(req, lower, upper, true);
+    }
+
+    private static void hyphenTest(String reqLower, String reqUpper, String lower, String upper, boolean upperStrict) {
+        Requirement req = Requirement.hyphenRequirement(reqLower, reqUpper, Semver.SemverType.NPM);
+        rangeTest(req, lower, upper, upperStrict);
+    }
+
+    private static void rangeTest(Requirement req, String lower, String upper, boolean upperStrict) {
+        assertNull(req.range);
+        assertEquals(Requirement.RequirementOperator.AND, req.op);
+
+        Requirement req1 = req.req1;
+        assertEquals(Range.RangeOperator.GTE, req1.range.op);
+        assertEquals(lower, req1.range.version.getValue());
+
+        Range.RangeOperator upOp = upperStrict ? Range.RangeOperator.LT : Range.RangeOperator.LTE;
+
+        Requirement req2 = req.req2;
+        assertEquals(upOp, req2.range.op);
+        assertEquals(upper, req2.range.version.getValue());
     }
 }
