@@ -128,6 +128,9 @@ public class Requirement {
         }
     }
 
+    /**
+     * Allows patch-level changes if a minor version is specified on the comparator. Allows minor-level changes if not.
+     */
     protected static Requirement tildeRequirement(String version, Semver.SemverType type) {
         Semver semver = new Semver(version, type);
         Requirement req1 = new Requirement(new Range(extrapolateVersion(semver), Range.RangeOperator.GTE), null, null, null);
@@ -135,6 +138,34 @@ public class Requirement {
         String next;
         if (semver.getMinor() != null) {
             next = semver.getMajor() + "." + (semver.getMinor() + 1) + ".0";
+        } else {
+            next = (semver.getMajor() + 1) + ".0.0";
+        }
+        Requirement req2 = new Requirement(new Range(next, Range.RangeOperator.LT), null, null, null);
+
+        return new Requirement(null, req1, RequirementOperator.AND, req2);
+    }
+
+    /**
+     * Allows changes that do not modify the left-most non-zero digit in the [major, minor, patch] tuple.
+     */
+    protected static Requirement caretRequirement(String version, Semver.SemverType type) {
+        Semver semver = new Semver(version, type);
+        Requirement req1 = new Requirement(new Range(extrapolateVersion(semver), Range.RangeOperator.GTE), null, null, null);
+
+        String next;
+        if (semver.getMajor() == 0) {
+            if (semver.getMinor() == null) {
+                next = "1.0.0";
+            } else if (semver.getMinor() == 0) {
+                if (semver.getPatch() == null) {
+                    next = "0.1.0";
+                } else {
+                    next = "0.0." + (semver.getPatch() + 1);
+                }
+            } else {
+                next = semver.getMajor() + "." + (semver.getMinor() + 1) + ".0";
+            }
         } else {
             next = (semver.getMajor() + 1) + ".0.0";
         }
@@ -178,10 +209,6 @@ public class Requirement {
 
     private static int zeroifyIfNull(Integer value) {
         return value == null ? 0 : value;
-    }
-
-    protected static Requirement caretRequirement(String version, Semver.SemverType type) {
-        return null;
     }
 
     public boolean isSatisfiedBy(String version) {

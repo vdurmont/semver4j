@@ -22,7 +22,7 @@ public class RequirementTest {
         assertIsRange(requirement, version, Range.RangeOperator.EQ);
     }
 
-    @Test public void buildNPM_with_a_strict_version() {
+    @Test public void buildNPM_with_a_full_version() {
         String version = "1.2.3";
         Requirement requirement = Requirement.buildNPM(version);
         assertIsRange(requirement, version, Range.RangeOperator.EQ);
@@ -41,13 +41,10 @@ public class RequirementTest {
     @Test public void buildNPM() {
         fail();
 
-        // TODO = operator
         // TODO hyphen ranges
         // TODO ranges (>1.0.0 <=1.2.3)
         // TODO ranges with '||'
         // TODO x and * ranges
-        // TODO ~ ranges
-        // TODO ^ ranges
     }
 
     @Test public void tildeRequirement_npm_full_version() {
@@ -97,9 +94,74 @@ public class RequirementTest {
         tildeTest("1.2.3-beta.2", "1.2.3-beta.2", "1.3.0");
     }
 
+    @Test public void caretRequirement_npm_full_version() {
+        // ^1.2.3 := >=1.2.3 <2.0.0
+        caretTest("1.2.3", "1.2.3", "2.0.0");
+    }
+
+    @Test public void caretRequirement_npm_full_version_with_major_0() {
+        // ^0.2.3 := >=0.2.3 <0.3.0
+        caretTest("0.2.3", "0.2.3", "0.3.0");
+    }
+
+    @Test public void caretRequirement_npm_full_version_with_major_and_minor_0() {
+        // ^0.0.3 := >=0.0.3 <0.0.4
+        caretTest("0.0.3", "0.0.3", "0.0.4");
+    }
+
+    @Test public void caretRequirement_npm_with_suffix() {
+        // ^1.2.3-beta.2 := >=1.2.3-beta.2 <2.0.0
+        caretTest("1.2.3-beta.2", "1.2.3-beta.2", "2.0.0");
+    }
+
+    @Test public void caretRequirement_npm_with_major_and_minor_0_and_suffix() {
+        // ^0.0.3-beta := >=0.0.3-beta <0.0.4
+        caretTest("0.0.3-beta", "0.0.3-beta", "0.0.4");
+    }
+
+    @Test public void caretRequirement_npm_without_patch() {
+        // ^1.2.x := >=1.2.0 <2.0.0
+        caretTest("1.2", "1.2.0", "2.0.0");
+        caretTest("1.2.x", "1.2.0", "2.0.0");
+        caretTest("1.2.*", "1.2.0", "2.0.0");
+    }
+
+    @Test public void caretRequirement_npm_with_only_major() {
+        // ^1.x.x := >=1.0.0 <2.0.0
+        caretTest("1", "1.0.0", "2.0.0");
+        caretTest("1.x", "1.0.0", "2.0.0");
+        caretTest("1.x.x", "1.0.0", "2.0.0");
+        caretTest("1.*", "1.0.0", "2.0.0");
+        caretTest("1.*.*", "1.0.0", "2.0.0");
+    }
+
+    @Test public void caretRequirement_npm_with_only_major_0() {
+        // ^0.x := >=0.0.0 <1.0.0
+        caretTest("0", "0.0.0", "1.0.0");
+        caretTest("0.x", "0.0.0", "1.0.0");
+        caretTest("0.x.x", "0.0.0", "1.0.0");
+        caretTest("0.*", "0.0.0", "1.0.0");
+        caretTest("0.*.*", "0.0.0", "1.0.0");
+    }
+
+    @Test public void caretRequirement_npm_without_patch_with_major_and_minor_0() {
+        // ^0.0.x := >=0.0.0 <0.1.0
+        caretTest("0.0", "0.0.0", "0.1.0");
+        caretTest("0.0.x", "0.0.0", "0.1.0");
+        caretTest("0.0.*", "0.0.0", "0.1.0");
+    }
+
     private static void tildeTest(String requirement, String lower, String upper) {
         Requirement req = Requirement.tildeRequirement(requirement, Semver.SemverType.NPM);
+        rangeTest(req, lower, upper);
+    }
 
+    private static void caretTest(String requirement, String lower, String upper) {
+        Requirement req = Requirement.caretRequirement(requirement, Semver.SemverType.NPM);
+        rangeTest(req, lower, upper);
+    }
+
+    private static void rangeTest(Requirement req, String lower, String upper) {
         assertNull(req.range);
         assertEquals(Requirement.RequirementOperator.AND, req.op);
 
@@ -110,10 +172,6 @@ public class RequirementTest {
         Requirement req2 = req.req2;
         assertEquals(Range.RangeOperator.LT, req2.range.op);
         assertEquals(upper, req2.range.version.getValue());
-    }
-
-    @Test public void caretRequirement() {
-        fail();
     }
 
     @Test public void isSatisfiedBy_with_a_range() {
