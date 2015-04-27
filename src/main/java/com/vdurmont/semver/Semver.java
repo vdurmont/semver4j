@@ -6,18 +6,30 @@ package com.vdurmont.semver;
  */
 public class Semver implements Comparable<Semver> {
     private final String value;
-    private final int major;
-    private final int minor;
-    private final int patch;
+    private final Integer major;
+    private final Integer minor;
+    private final Integer patch;
     private final String[] suffixTokens;
     private final String build;
+    private final SemverType type;
 
     public Semver(String value) {
+        this(value, SemverType.DEFAULT);
+    }
+
+    public Semver(String value, SemverType type) {
+        this.type = type;
         value = value.trim().toLowerCase();
+        if (type == SemverType.NPM && value.startsWith("v")) {
+            value = value.substring(1).trim();
+        }
         this.value = value;
 
         String[] tokens = value.split("-");
         String build = null;
+        Integer major = null;
+        Integer minor = null;
+        Integer patch = null;
         try {
             String[] mainTokens;
             if (tokens.length == 1) {
@@ -34,13 +46,24 @@ public class Semver implements Comparable<Semver> {
                 mainTokens = tokens[0].split("\\.");
             }
 
-
-            this.major = Integer.valueOf(mainTokens[0]);
-            this.minor = Integer.valueOf(mainTokens[1]);
-            this.patch = Integer.valueOf(mainTokens[2]);
+            try {
+                major = Integer.valueOf(mainTokens[0]);
+            } catch (NumberFormatException | IndexOutOfBoundsException ignored) {
+            }
+            try {
+                minor = Integer.valueOf(mainTokens[1]);
+            } catch (NumberFormatException | IndexOutOfBoundsException ignored) {
+            }
+            try {
+                patch = Integer.valueOf(mainTokens[2]);
+            } catch (NumberFormatException | IndexOutOfBoundsException ignored) {
+            }
         } catch (NumberFormatException | IndexOutOfBoundsException e) {
             throw new SemverException("The version is invalid: " + value);
         }
+        this.major = major;
+        this.minor = minor;
+        this.patch = patch;
 
         String[] suffix = new String[0];
         try {
@@ -60,6 +83,20 @@ public class Semver implements Comparable<Semver> {
         this.suffixTokens = suffix;
 
         this.build = build;
+
+        this.validate(type);
+    }
+
+    public void validate(SemverType type) {
+        if (this.major == null) {
+            throw new SemverException("Invalid version (no major version): " + value);
+        }
+        if (this.minor == null && type != SemverType.NPM) {
+            throw new SemverException("Invalid version (no minor version): " + value);
+        }
+        if (this.patch == null && type != SemverType.NPM) {
+            throw new SemverException("Invalid version (no patch version): " + value);
+        }
     }
 
     /**
@@ -228,16 +265,16 @@ public class Semver implements Comparable<Semver> {
         return value;
     }
 
-    public int getMajor() {
-        return major;
+    public Integer getMajor() {
+        return this.major;
     }
 
-    public int getMinor() {
-        return minor;
+    public Integer getMinor() {
+        return this.minor;
     }
 
-    public int getPatch() {
-        return patch;
+    public Integer getPatch() {
+        return this.patch;
     }
 
     public String[] getSuffixTokens() {
@@ -248,10 +285,19 @@ public class Semver implements Comparable<Semver> {
         return build;
     }
 
+    public SemverType getType() {
+        return type;
+    }
+
     /**
      * The types of diffs between two versions.
      */
     public enum VersionDiff {
         NONE, MAJOR, MINOR, PATCH, SUFFIX, BUILD
+    }
+
+    // TODO doc
+    public enum SemverType {
+        DEFAULT, NPM
     }
 }

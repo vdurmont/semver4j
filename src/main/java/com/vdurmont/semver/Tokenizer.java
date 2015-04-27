@@ -35,7 +35,7 @@ public class Tokenizer {
 
             if (SPECIAL_CHARS.containsKey(c)) {
                 if (token != null) {
-                    tokens.add(token.sanitize());
+                    tokens.add(token);
                     token = null;
                 }
                 tokens.add(SPECIAL_CHARS.get(c));
@@ -48,7 +48,7 @@ public class Tokenizer {
         }
 
         if (token != null) {
-            tokens.add(token.sanitize());
+            tokens.add(token);
         }
 
         return tokens;
@@ -70,13 +70,6 @@ public class Tokenizer {
         public void append(char c) {
             if (value == null) value = "";
             value += c;
-        }
-
-        public Token sanitize() {
-            if (this.type == TokenType.VERSION && this.value.startsWith("v")) {
-                this.value = this.value.substring(1).trim();
-            }
-            return this;
         }
     }
 

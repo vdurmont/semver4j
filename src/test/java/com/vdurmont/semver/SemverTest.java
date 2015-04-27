@@ -14,29 +14,68 @@ import static org.mockito.Mockito.verify;
 
 @RunWith(JUnit4.class)
 public class SemverTest {
-    @Test public void constructor_test() {
-        // GIVEN
-        String version = "1.2.3-beta.11+sha.0nsfgkjkjsdf";
-
-        // WHEN
-        Semver semver = new Semver(version);
-
-        // THEN
-        assertEquals(version, semver.getValue());
-        assertEquals(1, semver.getMajor());
-        assertEquals(2, semver.getMinor());
-        assertEquals(3, semver.getPatch());
-        assertEquals(2, semver.getSuffixTokens().length);
-        assertEquals("beta", semver.getSuffixTokens()[0]);
-        assertEquals("11", semver.getSuffixTokens()[1]);
-        assertEquals("sha.0nsfgkjkjsdf", semver.getBuild());
-
-        assertEquals("sha.0nsfgkjkjsdf", new Semver("1.2.3+sha.0nsfgkjkjsdf").getBuild());
-    }
-
     @Test(expected = SemverException.class)
     public void constructor_with_empty_build_fails() {
         new Semver("1.0.0+");
+    }
+
+    @Test public void default_constructor_test_full_version() {
+        String version = "1.2.3-beta.11+sha.0nsfgkjkjsdf";
+        Semver semver = new Semver(version);
+        assertIsSemver(semver, version, 1, 2, 3, new String[]{"beta", "11"}, "sha.0nsfgkjkjsdf");
+    }
+
+    @Test(expected = SemverException.class)
+    public void default_constructor_test_only_major_and_minor() {
+        String version = "1.2-beta.11+sha.0nsfgkjkjsdf";
+        new Semver(version);
+    }
+
+    @Test(expected = SemverException.class)
+    public void default_constructor_test_only_major() {
+        String version = "1-beta.11+sha.0nsfgkjkjsdf";
+        new Semver(version);
+    }
+
+    @Test public void npm_constructor_test_full_version() {
+        String version = "1.2.3-beta.11+sha.0nsfgkjkjsdf";
+        Semver semver = new Semver(version, Semver.SemverType.NPM);
+        assertIsSemver(semver, version, 1, 2, 3, new String[]{"beta", "11"}, "sha.0nsfgkjkjsdf");
+    }
+
+    @Test public void npm_constructor_test_only_major_and_minor() {
+        String version = "1.2-beta.11+sha.0nsfgkjkjsdf";
+        Semver semver = new Semver(version, Semver.SemverType.NPM);
+        assertIsSemver(semver, version, 1, 2, null, new String[]{"beta", "11"}, "sha.0nsfgkjkjsdf");
+    }
+
+    @Test public void npm_constructor_test_only_major() {
+        String version = "1-beta.11+sha.0nsfgkjkjsdf";
+        Semver semver = new Semver(version, Semver.SemverType.NPM);
+        assertIsSemver(semver, version, 1, null, null, new String[]{"beta", "11"}, "sha.0nsfgkjkjsdf");
+    }
+
+    @Test public void npm_constructor_with_leading_v() {
+        String version = "v1.2.3-beta.11+sha.0nsfgkjkjsdf";
+        Semver semver = new Semver(version, Semver.SemverType.NPM);
+        assertIsSemver(semver, "1.2.3-beta.11+sha.0nsfgkjkjsdf", 1, 2, 3, new String[]{"beta", "11"}, "sha.0nsfgkjkjsdf");
+
+        String versionWithSpace = "v 1.2.3-beta.11+sha.0nsfgkjkjsdf";
+        Semver semverWithSpace = new Semver(versionWithSpace, Semver.SemverType.NPM);
+        assertIsSemver(semverWithSpace, "1.2.3-beta.11+sha.0nsfgkjkjsdf", 1, 2, 3, new String[]{"beta", "11"}, "sha.0nsfgkjkjsdf");
+    }
+
+    private static void assertIsSemver(Semver semver, String value, Integer major, Integer minor, Integer patch, String[] suffixTokens, String build) {
+        assertEquals(value, semver.getValue());
+        assertEquals(major, semver.getMajor());
+        assertEquals(minor, semver.getMinor());
+        assertEquals(patch, semver.getPatch());
+        assertEquals(2, semver.getSuffixTokens().length);
+        assertEquals(suffixTokens.length, semver.getSuffixTokens().length);
+        for (int i = 0; i < suffixTokens.length; i++) {
+            assertEquals(suffixTokens[i], semver.getSuffixTokens()[i]);
+        }
+        assertEquals(build, semver.getBuild());
     }
 
     @Test public void isGreaterThan_test() {

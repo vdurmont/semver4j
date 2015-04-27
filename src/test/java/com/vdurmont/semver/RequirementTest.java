@@ -50,8 +50,8 @@ public class RequirementTest {
         // TODO ^ ranges
     }
 
-    @Test public void tildeRequirement_full_version() {
-        Requirement req = Requirement.tildeRequirement("1.2.3");
+    @Test public void tildeRequirement_npm_full_version() {
+        Requirement req = Requirement.tildeRequirement("1.2.3", Semver.SemverType.NPM);
 
         assertNull(req.range);
         assertEquals(Requirement.RequirementOperator.AND, req.op);
@@ -65,8 +65,8 @@ public class RequirementTest {
         assertEquals("1.3.0", req2.range.version.getValue());
     }
 
-    @Test public void tildeRequirement_only_major_minor() {
-        Requirement req = Requirement.tildeRequirement("1.2");
+    @Test public void tildeRequirement_npm_only_major_and_minor() {
+        Requirement req = Requirement.tildeRequirement("1.2", Semver.SemverType.NPM);
 
         assertNull(req.range);
         assertEquals(Requirement.RequirementOperator.AND, req.op);
@@ -80,8 +80,8 @@ public class RequirementTest {
         assertEquals("1.3.0", req2.range.version.getValue());
     }
 
-    @Test public void tildeRequirement_only_major() {
-        Requirement req = Requirement.tildeRequirement("1");
+    @Test public void tildeRequirement_npm_only_major() {
+        Requirement req = Requirement.tildeRequirement("1", Semver.SemverType.NPM);
 
         assertNull(req.range);
         assertEquals(Requirement.RequirementOperator.AND, req.op);
@@ -95,8 +95,8 @@ public class RequirementTest {
         assertEquals("2.0.0", req2.range.version.getValue());
     }
 
-    @Test public void tildeRequirement_full_version_major_0() {
-        Requirement req = Requirement.tildeRequirement("0.2.3");
+    @Test public void tildeRequirement_npm_full_version_major_0() {
+        Requirement req = Requirement.tildeRequirement("0.2.3", Semver.SemverType.NPM);
 
         assertNull(req.range);
         assertEquals(Requirement.RequirementOperator.AND, req.op);

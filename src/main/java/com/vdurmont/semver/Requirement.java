@@ -37,7 +37,7 @@ public class Requirement {
         List<Tokenizer.Token> rpn = toReversePolishNotation(tokens);
 
         // Create the requirement tree by evaluating the rpn list
-        return evaluateReversePolishNotation(rpn.iterator());
+        return evaluateReversePolishNotation(rpn.iterator(), Semver.SemverType.NPM);
     }
 
     private static List<Tokenizer.Token> toReversePolishNotation(List<Tokenizer.Token> tokens) {
@@ -71,12 +71,12 @@ public class Requirement {
         return queue;
     }
 
-    private static Requirement evaluateReversePolishNotation(Iterator<Tokenizer.Token> iterator) {
+    private static Requirement evaluateReversePolishNotation(Iterator<Tokenizer.Token> iterator, Semver.SemverType type) {
         try {
             Tokenizer.Token token = iterator.next();
 
             if (token.type == Tokenizer.TokenType.VERSION) {
-                Range range = new Range(token.value, Range.RangeOperator.EQ);
+                Range range = new Range(new Semver(token.value, type), Range.RangeOperator.EQ);
                 return new Requirement(range, null, null, null);
             } else if (token.type.isUnary()) {
                 Tokenizer.Token token2 = iterator.next();
@@ -99,9 +99,9 @@ public class Requirement {
                         rangeOp = Range.RangeOperator.GTE;
                         break;
                     case TILDE:
-                        return tildeRequirement(token2.value);
+                        return tildeRequirement(token2.value, type);
                     case CARET:
-                        return caretRequirement(token2.value);
+                        return caretRequirement(token2.value, type);
                     default:
                         throw new SemverException("Invalid requirement");
                 }
@@ -109,8 +109,8 @@ public class Requirement {
                 Range range = new Range(token2.value, rangeOp);
                 return new Requirement(range, null, null, null);
             } else {
-                Requirement req1 = evaluateReversePolishNotation(iterator);
-                Requirement req2 = evaluateReversePolishNotation(iterator);
+                Requirement req1 = evaluateReversePolishNotation(iterator, type);
+                Requirement req2 = evaluateReversePolishNotation(iterator, type);
 
                 RequirementOperator requirementOp;
                 switch (token.type) {
@@ -128,17 +128,59 @@ public class Requirement {
         }
     }
 
-    protected static Requirement tildeRequirement(String version) {
-        Semver semver = new Semver(version);
-        Requirement req1 = new Requirement(new Range(semver, Range.RangeOperator.GTE), null, null, null);
+    protected static Requirement tildeRequirement(String version, Semver.SemverType type) {
+        Semver semver = new Semver(version, type);
+        Requirement req1 = new Requirement(new Range(extrapolateVersion(semver), Range.RangeOperator.GTE), null, null, null);
 
-        String next = semver.getMajor() + "." + (semver.getMinor() + 1) + ".0";
+        String next;
+        if (semver.getMinor() != null) {
+            next = semver.getMajor() + "." + (semver.getMinor() + 1) + ".0";
+        } else {
+            next = (semver.getMajor() + 1) + ".0.0";
+        }
         Requirement req2 = new Requirement(new Range(next, Range.RangeOperator.LT), null, null, null);
 
         return new Requirement(null, req1, RequirementOperator.AND, req2);
     }
 
-    protected static Requirement caretRequirement(String version) {
+    /**
+     * Extrapolates the optional minor and patch numbers.
+     * - 1 => 1.0.0
+     * - 1.2 => 1.2.0
+     * - 1.2.3 => 1.2.3
+     *
+     * @param semver the original semver
+     *
+     * @return a semver with the extrapolated minor and patch numbers
+     */
+    private static Semver extrapolateVersion(Semver semver) {
+        StringBuilder sb = new StringBuilder()
+                .append(semver.getMajor())
+                .append(".")
+                .append(zeroifyIfNull(semver.getMinor()))
+                .append(".")
+                .append(zeroifyIfNull(semver.getPatch()));
+        boolean first = true;
+        for (int i = 0; i < semver.getSuffixTokens().length; i++) {
+            if (first) {
+                sb.append("-");
+                first = false;
+            } else {
+                sb.append(".");
+            }
+            sb.append(semver.getSuffixTokens()[i]);
+        }
+        if (semver.getBuild() != null) {
+            sb.append("+").append(semver.getBuild());
+        }
+        return new Semver(sb.toString(), semver.getType());
+    }
+
+    private static int zeroifyIfNull(Integer value) {
+        return value == null ? 0 : value;
+    }
+
+    protected static Requirement caretRequirement(String version, Semver.SemverType type) {
         return null;
     }
 
