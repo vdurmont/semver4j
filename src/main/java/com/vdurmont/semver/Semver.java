@@ -48,15 +48,31 @@ public class Semver implements Comparable<Semver> {
 
             try {
                 major = Integer.valueOf(mainTokens[0]);
-            } catch (NumberFormatException | IndexOutOfBoundsException ignored) {
+            } catch (NumberFormatException | IndexOutOfBoundsException e) {
+                throw new SemverException("Invalid version (no major version): " + value);
             }
+
             try {
                 minor = Integer.valueOf(mainTokens[1]);
-            } catch (NumberFormatException | IndexOutOfBoundsException ignored) {
+            } catch (IndexOutOfBoundsException e) {
+                if (type != SemverType.NPM) {
+                    throw new SemverException("Invalid version (no minor version): " + value);
+                }
+            } catch (NumberFormatException e) {
+                if (type != SemverType.NPM || (!"x".equalsIgnoreCase(mainTokens[1]))) {
+                    throw new SemverException("Invalid version (no minor version): " + value);
+                }
             }
             try {
                 patch = Integer.valueOf(mainTokens[2]);
-            } catch (NumberFormatException | IndexOutOfBoundsException ignored) {
+            } catch (IndexOutOfBoundsException e) {
+                if (type != SemverType.NPM) {
+                    throw new SemverException("Invalid version (no patch version): " + value);
+                }
+            } catch (NumberFormatException e) {
+                if (type != SemverType.NPM || (!"x".equalsIgnoreCase(mainTokens[2]))) {
+                    throw new SemverException("Invalid version (no patch version): " + value);
+                }
             }
         } catch (NumberFormatException | IndexOutOfBoundsException e) {
             throw new SemverException("The version is invalid: " + value);
@@ -88,9 +104,6 @@ public class Semver implements Comparable<Semver> {
     }
 
     public void validate(SemverType type) {
-        if (this.major == null) {
-            throw new SemverException("Invalid version (no major version): " + value);
-        }
         if (this.minor == null && type != SemverType.NPM) {
             throw new SemverException("Invalid version (no minor version): " + value);
         }
