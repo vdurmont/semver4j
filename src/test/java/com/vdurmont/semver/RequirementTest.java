@@ -59,6 +59,7 @@ public class RequirementTest {
         // ~1.2 := >=1.2.0 <1.(2+1).0 := >=1.2.0 <1.3.0
         tildeTest("1.2", "1.2.0", "1.3.0");
         tildeTest("1.2.x", "1.2.0", "1.3.0");
+        tildeTest("1.2.*", "1.2.0", "1.3.0");
     }
 
     @Test public void tildeRequirement_npm_only_major() {
@@ -66,6 +67,8 @@ public class RequirementTest {
         tildeTest("1", "1.0.0", "2.0.0");
         tildeTest("1.x", "1.0.0", "2.0.0");
         tildeTest("1.x.x", "1.0.0", "2.0.0");
+        tildeTest("1.*", "1.0.0", "2.0.0");
+        tildeTest("1.*.*", "1.0.0", "2.0.0");
     }
 
     @Test public void tildeRequirement_npm_full_version_major_0() {
@@ -77,6 +80,7 @@ public class RequirementTest {
         // ~0.2 := >=0.2.0 <0.(2+1).0 := >=0.2.0 <0.3.0
         tildeTest("0.2", "0.2.0", "0.3.0");
         tildeTest("0.2.x", "0.2.0", "0.3.0");
+        tildeTest("0.2.*", "0.2.0", "0.3.0");
     }
 
     @Test public void tildeRequirement_npm_only_major_with_major_0() {
@@ -84,6 +88,8 @@ public class RequirementTest {
         tildeTest("0", "0.0.0", "1.0.0");
         tildeTest("0.x", "0.0.0", "1.0.0");
         tildeTest("0.x.x", "0.0.0", "1.0.0");
+        tildeTest("0.*", "0.0.0", "1.0.0");
+        tildeTest("0.*.*", "0.0.0", "1.0.0");
     }
 
     @Test public void tildeRequirement_npm_with_suffix() {

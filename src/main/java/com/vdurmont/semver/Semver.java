@@ -59,7 +59,7 @@ public class Semver implements Comparable<Semver> {
                     throw new SemverException("Invalid version (no minor version): " + value);
                 }
             } catch (NumberFormatException e) {
-                if (type != SemverType.NPM || (!"x".equalsIgnoreCase(mainTokens[1]))) {
+                if (type != SemverType.NPM || (!"x".equalsIgnoreCase(mainTokens[1]) && !"*".equals(mainTokens[1]))) {
                     throw new SemverException("Invalid version (no minor version): " + value);
                 }
             }
@@ -70,7 +70,7 @@ public class Semver implements Comparable<Semver> {
                     throw new SemverException("Invalid version (no patch version): " + value);
                 }
             } catch (NumberFormatException e) {
-                if (type != SemverType.NPM || (!"x".equalsIgnoreCase(mainTokens[2]))) {
+                if (type != SemverType.NPM || (!"x".equalsIgnoreCase(mainTokens[2]) && !"*".equals(mainTokens[2]))) {
                     throw new SemverException("Invalid version (no patch version): " + value);
                 }
             }
