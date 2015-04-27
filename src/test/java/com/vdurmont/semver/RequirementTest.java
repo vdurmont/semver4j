@@ -51,69 +51,54 @@ public class RequirementTest {
     }
 
     @Test public void tildeRequirement_npm_full_version() {
-        Requirement req = Requirement.tildeRequirement("1.2.3", Semver.SemverType.NPM);
-
-        assertNull(req.range);
-        assertEquals(Requirement.RequirementOperator.AND, req.op);
-
-        Requirement req1 = req.req1;
-        assertEquals(Range.RangeOperator.GTE, req1.range.op);
-        assertEquals("1.2.3", req1.range.version.getValue());
-
-        Requirement req2 = req.req2;
-        assertEquals(Range.RangeOperator.LT, req2.range.op);
-        assertEquals("1.3.0", req2.range.version.getValue());
+        // ~1.2.3 := >=1.2.3 <1.(2+1).0 := >=1.2.3 <1.3.0
+        tildeTest("1.2.3", "1.2.3", "1.3.0");
     }
 
     @Test public void tildeRequirement_npm_only_major_and_minor() {
-        Requirement req = Requirement.tildeRequirement("1.2", Semver.SemverType.NPM);
-
-        assertNull(req.range);
-        assertEquals(Requirement.RequirementOperator.AND, req.op);
-
-        Requirement req1 = req.req1;
-        assertEquals(Range.RangeOperator.GTE, req1.range.op);
-        assertEquals("1.2.0", req1.range.version.getValue());
-
-        Requirement req2 = req.req2;
-        assertEquals(Range.RangeOperator.LT, req2.range.op);
-        assertEquals("1.3.0", req2.range.version.getValue());
+        // ~1.2 := >=1.2.0 <1.(2+1).0 := >=1.2.0 <1.3.0
+        tildeTest("1.2", "1.2.0", "1.3.0");
     }
 
     @Test public void tildeRequirement_npm_only_major() {
-        Requirement req = Requirement.tildeRequirement("1", Semver.SemverType.NPM);
-
-        assertNull(req.range);
-        assertEquals(Requirement.RequirementOperator.AND, req.op);
-
-        Requirement req1 = req.req1;
-        assertEquals(Range.RangeOperator.GTE, req1.range.op);
-        assertEquals("1.0.0", req1.range.version.getValue());
-
-        Requirement req2 = req.req2;
-        assertEquals(Range.RangeOperator.LT, req2.range.op);
-        assertEquals("2.0.0", req2.range.version.getValue());
+        // ~1 := >=1.0.0 <(1+1).0.0 := >=1.0.0 <2.0.0
+        tildeTest("1", "1.0.0", "2.0.0");
     }
 
     @Test public void tildeRequirement_npm_full_version_major_0() {
-        Requirement req = Requirement.tildeRequirement("0.2.3", Semver.SemverType.NPM);
+        // ~0.2.3 := >=0.2.3 <0.(2+1).0 := >=0.2.3 <0.3.0
+        tildeTest("0.2.3", "0.2.3", "0.3.0");
+    }
+
+    @Test public void tildeRequirement_npm_only_major_and_minor_with_major_0() {
+        // ~0.2 := >=0.2.0 <0.(2+1).0 := >=0.2.0 <0.3.0
+        tildeTest("0.2", "0.2.0", "0.3.0");
+    }
+
+    @Test public void tildeRequirement_npm_only_major_with_major_0() {
+        // ~0 := >=0.0.0 <(0+1).0.0 := >=0.0.0 <1.0.0
+        tildeTest("0", "0.0.0", "1.0.0");
+    }
+
+    @Test public void tildeRequirement_npm_with_suffix() {
+        // ~1.2.3-beta.2 := >=1.2.3-beta.2 <1.3.0
+        tildeTest("1.2.3-beta.2", "1.2.3-beta.2", "1.3.0");
+    }
+
+    private static void tildeTest(String requirement, String lower, String upper) {
+        Requirement req = Requirement.tildeRequirement(requirement, Semver.SemverType.NPM);
 
         assertNull(req.range);
         assertEquals(Requirement.RequirementOperator.AND, req.op);
 
         Requirement req1 = req.req1;
         assertEquals(Range.RangeOperator.GTE, req1.range.op);
-        assertEquals("0.2.3", req1.range.version.getValue());
+        assertEquals(lower, req1.range.version.getValue());
 
         Requirement req2 = req.req2;
         assertEquals(Range.RangeOperator.LT, req2.range.op);
-        assertEquals("0.3.0", req2.range.version.getValue());
+        assertEquals(upper, req2.range.version.getValue());
     }
-
-    // TODO tests for tilde
-//        ~0.2 := >=0.2.0 <0.(2+1).0 := >=0.2.0 <0.3.0 (Same as 0.2.x)
-//        ~0 := >=0.0.0 <(0+1).0.0 := >=0.0.0 <1.0.0 (Same as 0.x)
-//        ~1.2.3-beta.2 := >=1.2.3-beta.2 <1.3.0
 
     @Test public void caretRequirement() {
         fail();
