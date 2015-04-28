@@ -27,6 +27,7 @@ public class Tokenizer {
 
 
         LinkedList<Token> tokens = new LinkedList<>();
+        Token previousToken = null;
 
         char[] chars = requirement.toCharArray();
         Token token = null;
@@ -36,9 +37,18 @@ public class Tokenizer {
             if (SPECIAL_CHARS.containsKey(c)) {
                 if (token != null) {
                     tokens.add(token);
+                    previousToken = token;
                     token = null;
                 }
-                tokens.add(SPECIAL_CHARS.get(c));
+
+                Token current = SPECIAL_CHARS.get(c);
+                if (current.type.isUnary() && previousToken != null && previousToken.type == TokenType.VERSION) {
+                    // Handling the ranges like "≥1.2.3 <4.5.6" by inserting a "AND" binary operator
+                    tokens.add(new Token(TokenType.AND));
+                }
+
+                tokens.add(current);
+                previousToken = current;
             } else {
                 if (token == null) {
                     token = new Token(TokenType.VERSION);
@@ -86,6 +96,7 @@ public class Tokenizer {
         // Binary operators: - ||
         HYPHEN('-', false),
         OR('|', false),
+        AND(null, false),
 
         // Delimiters: ( )
         OPENING('(', false),

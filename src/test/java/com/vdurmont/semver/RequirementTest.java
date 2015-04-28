@@ -38,10 +38,14 @@ public class RequirementTest {
         assertIsRange(Requirement.buildNPM("= 1.2.3"), "1.2.3", Range.RangeOperator.EQ);
     }
 
+    @Test public void buildNPM_with_a_range() {
+        Requirement req = Requirement.buildNPM(">=1.2.3 <4.5.6");
+        rangeTest(req, "1.2.3", "4.5.6", true);
+    }
+
     @Test public void buildNPM() {
         fail();
 
-        // TODO ranges (>1.0.0 <=1.2.3)
         // TODO ranges with '||'
         // TODO x and * ranges
     }

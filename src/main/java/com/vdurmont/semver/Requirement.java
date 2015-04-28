@@ -44,7 +44,8 @@ public class Requirement {
         LinkedList<Tokenizer.Token> queue = new LinkedList<>();
         Stack<Tokenizer.Token> stack = new Stack<>();
 
-        for (Tokenizer.Token token : tokens) {
+        for (int i = 0; i < tokens.size(); i++) {
+            Tokenizer.Token token = tokens.get(i);
             switch (token.type) {
                 case VERSION:
                     queue.add(token);
@@ -59,7 +60,14 @@ public class Requirement {
                     }
                     break;
                 default:
-                    stack.push(token);
+                    if (token.type.isUnary()) {
+                        queue.push(token);
+                        i++;
+                        queue.push(tokens.get(i));
+                    } else {
+                        stack.push(token);
+                    }
+                    break;
             }
         }
 
@@ -121,6 +129,9 @@ public class Requirement {
                     case OR:
                         requirementOp = RequirementOperator.OR;
                         break;
+                    case AND:
+                        requirementOp = RequirementOperator.AND;
+                        break;
                     default:
                         throw new SemverException("Invalid requirement");
                 }
@@ -168,7 +179,7 @@ public class Requirement {
                     next = "0.0." + (semver.getPatch() + 1);
                 }
             } else {
-                next = semver.getMajor() + "." + (semver.getMinor() + 1) + ".0";
+                next = "0." + (semver.getMinor() + 1) + ".0";
             }
         } else {
             next = (semver.getMajor() + 1) + ".0.0";
