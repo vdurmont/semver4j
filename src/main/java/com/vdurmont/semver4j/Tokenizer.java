@@ -5,7 +5,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-// TODO doc
+/**
+ * Utility class to convert a NPM requirement string into a list of tokens.
+ */
 public class Tokenizer {
     private static final Map<Character, Token> SPECIAL_CHARS;
 
@@ -18,8 +20,17 @@ public class Tokenizer {
         }
     }
 
-
-    public static List<Token> tokenize(String requirement) {
+    /**
+     * Takes a NPM requirement string and creates a list of tokens by performing 3 operations:
+     * - If the token is a version, it will add the version string
+     * - If the token is an operator, it will add the operator
+     * - It will insert missing "AND" operators for ranges
+     *
+     * @param requirement the requirement string
+     *
+     * @return the list of tokens
+     */
+    protected static List<Token> tokenize(String requirement) {
         // Replace the tokens made of 2 chars
         requirement = requirement.replace("||", "|")
                 .replace("<=", "≤")
@@ -64,7 +75,10 @@ public class Tokenizer {
         return tokens;
     }
 
-    public static class Token {
+    /**
+     * A token in a requirement string. Has a type and a value if it is of type VERSION
+     */
+    protected static class Token {
         public final TokenType type;
         public String value;
 
@@ -83,7 +97,10 @@ public class Tokenizer {
         }
     }
 
-    public enum TokenType {
+    /**
+     * The different types of tokens (unary operators, binary operators, delimiters and versions)
+     */
+    protected enum TokenType {
         // Unary operators: ~ ^ = < <= > >=
         TILDE('~', true),
         CARET('^', true),
