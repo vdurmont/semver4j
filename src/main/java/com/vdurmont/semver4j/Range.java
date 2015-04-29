@@ -1,4 +1,4 @@
-package com.vdurmont.semver;
+package com.vdurmont.semver4j;
 
 // TODO doc
 public class Range {

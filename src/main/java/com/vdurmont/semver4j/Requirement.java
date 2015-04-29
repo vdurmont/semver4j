@@ -1,4 +1,4 @@
-package com.vdurmont.semver;
+package com.vdurmont.semver4j;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -40,6 +40,9 @@ public class Requirement {
         return evaluateReversePolishNotation(rpn.iterator(), Semver.SemverType.NPM);
     }
 
+    /**
+     * Adaptation of the shutting yard algorithm
+     */
     private static List<Tokenizer.Token> toReversePolishNotation(List<Tokenizer.Token> tokens) {
         LinkedList<Tokenizer.Token> queue = new LinkedList<>();
         Stack<Tokenizer.Token> stack = new Stack<>();

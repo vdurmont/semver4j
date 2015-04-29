@@ -1,4 +1,4 @@
-package com.vdurmont.semver;
+package com.vdurmont.semver4j;
 
 public class SemverException extends RuntimeException {
     public SemverException(String msg) {

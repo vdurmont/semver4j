@@ -1,4 +1,4 @@
-package com.vdurmont.semver;
+package com.vdurmont.semver4j;
 
 /**
  * Semver is a tool that provides useful methods to manipulate versions that follow the "semantic versioning" specification
