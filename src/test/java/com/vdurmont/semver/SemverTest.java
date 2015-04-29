@@ -99,6 +99,8 @@ public class SemverTest {
 
         assertFalse(new Semver("1.0.0").isGreaterThan("1.0.0"));
         assertFalse(new Semver("1.0.0-alpha.12").isGreaterThan("1.0.0-alpha.12"));
+
+        assertFalse(new Semver("0.0.1").isGreaterThan("5.0.0"));
     }
 
     @Test public void isLowerThan_test() {
@@ -138,7 +140,7 @@ public class SemverTest {
         verify(req).isSatisfiedBy(semver);
     }
 
-    @Test public void test() {
+    @Test public void test_all_the_methods() {
         fail();
     }
 }

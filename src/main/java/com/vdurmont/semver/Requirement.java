@@ -84,8 +84,14 @@ public class Requirement {
             Tokenizer.Token token = iterator.next();
 
             if (token.type == Tokenizer.TokenType.VERSION) {
-                Range range = new Range(new Semver(token.value, type), Range.RangeOperator.EQ);
-                return new Requirement(range, null, null, null);
+                Semver version = new Semver(token.value, type);
+                if (version.getMinor() != null && version.getPatch() != null) {
+                    Range range = new Range(version, Range.RangeOperator.EQ);
+                    return new Requirement(range, null, null, null);
+                } else {
+                    // If we have a version with a wildcard char (like 1.2.x, 1.2.* or 1.2), we need a tilde requirement
+                    return tildeRequirement(version.getValue(), type);
+                }
             } else if (token.type == Tokenizer.TokenType.HYPHEN) {
                 Tokenizer.Token token3 = iterator.next(); // Note that token3 is before token2!
                 Tokenizer.Token token2 = iterator.next();

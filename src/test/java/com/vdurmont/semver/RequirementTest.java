@@ -6,9 +6,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -43,11 +43,19 @@ public class RequirementTest {
         rangeTest(req, "1.2.3", "4.5.6", true);
     }
 
-    @Test public void buildNPM() {
-        fail();
+    @Test public void buildNPM_with_a_OR_operator() {
+        Requirement req = Requirement.buildNPM(">=1.2.3 || >4.5.6");
 
-        // TODO ranges with '||'
-        // TODO x and * ranges
+        assertNull(req.range);
+        assertEquals(Requirement.RequirementOperator.OR, req.op);
+
+        Requirement req1 = req.req1;
+        assertEquals(Range.RangeOperator.GTE, req1.range.op);
+        assertEquals("1.2.3", req1.range.version.getValue());
+
+        Requirement req2 = req.req2;
+        assertEquals(Range.RangeOperator.GT, req2.range.op);
+        assertEquals("4.5.6", req2.range.version.getValue());
     }
 
     @Test public void tildeRequirement_npm_full_version() {
@@ -198,6 +206,14 @@ public class RequirementTest {
         for (Requirement req : reqs) {
             rangeTest(req, "1.2.3", "2.3.4", false);
         }
+    }
+
+    @Test public void isSatisfiedBy_with_a_complex_example() {
+        Requirement req = Requirement.buildNPM("1.x || >=2.5.0 || 5.0.0 - 7.2.3");
+
+        assertTrue(req.isSatisfiedBy("1.2.3"));
+        assertTrue(req.isSatisfiedBy("2.5.2"));
+        assertFalse(req.isSatisfiedBy("0.2.3"));
     }
 
     @Test public void isSatisfiedBy_with_a_range() {

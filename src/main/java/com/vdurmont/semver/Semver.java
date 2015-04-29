@@ -138,8 +138,11 @@ public class Semver implements Comparable<Semver> {
     public boolean isGreaterThan(Semver version) {
         // Compare the main part
         if (this.getMajor() > version.getMajor()) return true;
+        else if (this.getMajor() < version.getMajor()) return false;
         if (this.getMinor() > version.getMinor()) return true;
+        else if (this.getMinor() < version.getMinor()) return false;
         if (this.getPatch() > version.getPatch()) return true;
+        else if (this.getPatch() < version.getPatch()) return false;
 
         // Let's take a look at the suffix
         String[] tokens1 = this.getSuffixTokens();
