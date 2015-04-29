@@ -84,6 +84,10 @@ public class Requirement {
             Tokenizer.Token token = iterator.next();
 
             if (token.type == Tokenizer.TokenType.VERSION) {
+                if ("*".equals(token.value)) {
+                    // Special case for "*"
+                    return new Requirement(new Range("0.0.0", Range.RangeOperator.GTE), null, null, null);
+                }
                 Semver version = new Semver(token.value, type);
                 if (version.getMinor() != null && version.getPatch() != null) {
                     Range range = new Range(version, Range.RangeOperator.EQ);

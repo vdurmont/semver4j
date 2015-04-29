@@ -208,6 +208,15 @@ public class RequirementTest {
         }
     }
 
+    @Test public void buildNPM_with_a_wildcard() {
+        Requirement req = Requirement.buildNPM("*");
+        assertNull(req.op);
+        assertNull(req.req1);
+        assertNull(req.req2);
+        assertEquals(Range.RangeOperator.GTE, req.range.op);
+        assertEquals(new Semver("0.0.0"), req.range.version);
+    }
+
     @Test public void isSatisfiedBy_with_a_complex_example() {
         Requirement req = Requirement.buildNPM("1.x || >=2.5.0 || 5.0.0 - 7.2.3");
 
