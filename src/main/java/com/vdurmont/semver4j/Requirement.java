@@ -7,13 +7,23 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Stack;
 
-// TODO doc
+/**
+ * A requirement will provide an easy way to check if a version is satisfying.
+ * There are 2 types of requirements:
+ * - Strict: checks if a version is equivalent to another
+ * - NPM: follows the rules of NPM
+ */
 public class Requirement {
     protected final Range range;
     protected final Requirement req1;
     protected final RequirementOperator op;
     protected final Requirement req2;
 
+    /**
+     * Builds a requirement. (private use only)
+     *
+     * A requirement has to be a range or a combination of an operator and 2 other requirements.
+     */
     protected Requirement(Range range, Requirement req1, RequirementOperator op, Requirement req2) {
         this.range = range;
         this.req1 = req1;
@@ -21,14 +31,31 @@ public class Requirement {
         this.req2 = req2;
     }
 
+    /**
+     * @see #buildStrict(Semver)
+     */
     public static Requirement buildStrict(String requirement) {
         return buildStrict(new Semver(requirement));
     }
 
+    /**
+     * Builds a strict requirement (will test that the version is equivalent to the requirement)
+     *
+     * @param requirement the version of the requirement
+     *
+     * @return the generated requirement
+     */
     public static Requirement buildStrict(Semver requirement) {
         return new Requirement(new Range(requirement, Range.RangeOperator.EQ), null, null, null);
     }
 
+    /**
+     * Builds a requirement following the rules of NPM.
+     *
+     * @param requirement the requirement as a string
+     *
+     * @return the generated requirement
+     */
     public static Requirement buildNPM(String requirement) {
         // Tokenize the string
         List<Tokenizer.Token> tokens = Tokenizer.tokenize(requirement);
@@ -82,6 +109,9 @@ public class Requirement {
         return queue;
     }
 
+    /**
+     * Evaluates a reverse polish notation token list
+     */
     private static Requirement evaluateReversePolishNotation(Iterator<Tokenizer.Token> iterator, Semver.SemverType type) {
         try {
             Tokenizer.Token token = iterator.next();
@@ -160,6 +190,9 @@ public class Requirement {
      * Allows patch-level changes if a minor version is specified on the comparator. Allows minor-level changes if not.
      */
     protected static Requirement tildeRequirement(String version, Semver.SemverType type) {
+        if (type != Semver.SemverType.NPM) {
+            throw new SemverException("The tilde requirements are only compatible with NPM.");
+        }
         Semver semver = new Semver(version, type);
         Requirement req1 = new Requirement(new Range(extrapolateVersion(semver), Range.RangeOperator.GTE), null, null, null);
 
@@ -178,6 +211,9 @@ public class Requirement {
      * Allows changes that do not modify the left-most non-zero digit in the [major, minor, patch] tuple.
      */
     protected static Requirement caretRequirement(String version, Semver.SemverType type) {
+        if (type != Semver.SemverType.NPM) {
+            throw new SemverException("The caret requirements are only compatible with NPM.");
+        }
         Semver semver = new Semver(version, type);
         Requirement req1 = new Requirement(new Range(extrapolateVersion(semver), Range.RangeOperator.GTE), null, null, null);
 
@@ -202,7 +238,13 @@ public class Requirement {
         return new Requirement(null, req1, RequirementOperator.AND, req2);
     }
 
+    /**
+     * Creates a requirement that satisfies "x1.y1.z1 - x2.y2.z2".
+     */
     protected static Requirement hyphenRequirement(String lowerVersion, String upperVersion, Semver.SemverType type) {
+        if (type != Semver.SemverType.NPM) {
+            throw new SemverException("The hyphen requirements are only compatible with NPM.");
+        }
         Semver lower = extrapolateVersion(new Semver(lowerVersion, type));
         Semver upper = new Semver(upperVersion, type);
 
@@ -235,9 +277,9 @@ public class Requirement {
         StringBuilder sb = new StringBuilder()
                 .append(semver.getMajor())
                 .append(".")
-                .append(zeroifyIfNull(semver.getMinor()))
+                .append(semver.getMinor() == null ? 0 : semver.getMinor())
                 .append(".")
-                .append(zeroifyIfNull(semver.getPatch()));
+                .append(semver.getPatch() == null ? 0 : semver.getPatch());
         boolean first = true;
         for (int i = 0; i < semver.getSuffixTokens().length; i++) {
             if (first) {
@@ -254,14 +296,20 @@ public class Requirement {
         return new Semver(sb.toString(), semver.getType());
     }
 
-    private static int zeroifyIfNull(Integer value) {
-        return value == null ? 0 : value;
-    }
-
+    /**
+     * @see #isSatisfiedBy(Semver)
+     */
     public boolean isSatisfiedBy(String version) {
         return this.isSatisfiedBy(new Semver(version));
     }
 
+    /**
+     * Checks if the requirement is satisfied by a version.
+     *
+     * @param version the version that will be checked
+     *
+     * @return true if the version satisfies the requirement
+     */
     public boolean isSatisfiedBy(Semver version) {
         if (this.range != null) {
             // We are on a leaf
@@ -279,7 +327,10 @@ public class Requirement {
         }
     }
 
-    public enum RequirementOperator {
+    /**
+     * The operators that can be used in a requirement.
+     */
+    protected enum RequirementOperator {
         AND, OR
     }
 }
