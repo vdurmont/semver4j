@@ -252,9 +252,9 @@ public class Requirement {
         if (upper.getMinor() == null || upper.getPatch() == null) {
             upperOperator = Range.RangeOperator.LT;
             if (upper.getMinor() == null) {
-                upper = extrapolateVersion(upper).incMajor();
+                upper = extrapolateVersion(upper).withIncMajor();
             } else {
-                upper = extrapolateVersion(upper).incMinor();
+                upper = extrapolateVersion(upper).withIncMinor();
             }
         }
         Requirement req1 = new Requirement(new Range(lower, Range.RangeOperator.GTE), null, null, null);

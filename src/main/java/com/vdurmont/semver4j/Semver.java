@@ -1,5 +1,7 @@
 package com.vdurmont.semver4j;
 
+import java.util.Objects;
+
 /**
  * Semver is a tool that provides useful methods to manipulate versions that follow the "semantic versioning" specification
  * (see http://semver.org)
@@ -271,54 +273,106 @@ public class Semver implements Comparable<Semver> {
      * @return the greatest difference
      */
     public VersionDiff diff(Semver version) {
-        // TODO code me
-        return null;
+        if (!Objects.equals(this.major, version.getMajor())) return VersionDiff.MAJOR;
+        if (!Objects.equals(this.minor, version.getMinor())) return VersionDiff.MINOR;
+        if (!Objects.equals(this.patch, version.getPatch())) return VersionDiff.PATCH;
+        if (!areSameSuffixes(version.getSuffixTokens())) return VersionDiff.SUFFIX;
+        if (!Objects.equals(this.build, version.getBuild())) return VersionDiff.BUILD;
+        return VersionDiff.NONE;
     }
 
-    public Semver incMajor() {
-        return this.incMajor(1);
+    private boolean areSameSuffixes(String[] suffixTokens) {
+        if (this.suffixTokens == null && suffixTokens == null) return true;
+        else if (this.suffixTokens == null || suffixTokens == null) return false;
+        else if (this.suffixTokens.length != suffixTokens.length) return false;
+        for (int i = 0; i < this.suffixTokens.length; i++) {
+            if (!this.suffixTokens[i].equals(suffixTokens[i])) return false;
+        }
+        return true;
     }
 
-    public Semver incMajor(int increment) {
-        return this.inc(increment, 0, 0);
+    public Semver withIncMajor() {
+        return this.withIncMajor(1);
     }
 
-    public Semver incMinor() {
-        return this.incMinor(1);
+    public Semver withIncMajor(int increment) {
+        return this.withInc(increment, 0, 0);
     }
 
-    public Semver incMinor(int increment) {
-        return this.inc(0, increment, 0);
+    public Semver withIncMinor() {
+        return this.withIncMinor(1);
     }
 
-    public Semver incPatch() {
-        return this.incPatch(1);
+    public Semver withIncMinor(int increment) {
+        return this.withInc(0, increment, 0);
     }
 
-    public Semver incPatch(int increment) {
-        return this.inc(0, 0, increment);
+    public Semver withIncPatch() {
+        return this.withIncPatch(1);
     }
 
-    private Semver inc(int majorInc, int minorInc, int patchInc) {
-        StringBuilder sb = new StringBuilder()
-                .append(this.major + majorInc);
+    public Semver withIncPatch(int increment) {
+        return this.withInc(0, 0, increment);
+    }
+
+    private Semver withInc(int majorInc, int minorInc, int patchInc) {
+        Integer minor = this.minor;
+        Integer patch = this.patch;
         if (this.minor != null) {
-            sb.append(".").append(this.minor + minorInc);
+            minor += minorInc;
         }
         if (this.patch != null) {
-            sb.append(".").append(this.patch + patchInc);
+            patch += patchInc;
         }
-        boolean first = true;
-        for (String suffixToken : this.suffixTokens) {
-            if (first) {
-                sb.append("-");
-                first = false;
-            } else {
-                sb.append(".");
+        return with(this.major + majorInc, minor, patch, true, true);
+    }
+
+    public Semver withClearedSuffix() {
+        return with(this.major, this.minor, this.patch, false, true);
+    }
+
+    public Semver withClearedBuild() {
+        return with(this.major, this.minor, this.patch, true, false);
+    }
+
+    public Semver withClearedSuffixAndBuild() {
+        return with(this.major, this.minor, this.patch, false, false);
+    }
+
+    public Semver nextMajor() {
+        return with(this.major + 1, 0, 0, false, false);
+    }
+
+    public Semver nextMinor() {
+        return with(this.major, this.minor + 1, 0, false, false);
+    }
+
+    public Semver nextPatch() {
+        return with(this.major, this.minor, this.patch + 1, false, false);
+    }
+
+    private Semver with(int major, Integer minor, Integer patch, boolean suffix, boolean build) {
+        StringBuilder sb = new StringBuilder()
+                .append(major);
+        if (this.minor != null) {
+            sb.append(".").append(minor);
+        }
+        if (this.patch != null) {
+            sb.append(".").append(patch);
+        }
+        if (suffix) {
+            boolean first = true;
+            for (String suffixToken : this.suffixTokens) {
+                if (first) {
+                    sb.append("-");
+                    first = false;
+                } else {
+                    sb.append(".");
+                }
+                sb.append(suffixToken);
             }
-            sb.append(suffixToken);
         }
-        if (this.build != null) {
+        if (this.build != null && build) {
             sb.append("+").append(this.build);
         }
 

@@ -60,7 +60,7 @@ sem.isLowerThan("1.2.2"); // false
 sem.isLowerThan("1.2.4"); // true
 sem.isLowerThan("1.2.3"); // false
 ```
-* `isEqualTo` or `equals` returns true if the versions are exactly the same.  
+* `isEqualTo` returns true if the versions are exactly the same.  
 ```java
 Semver sem = new Semver("1.2.3+sha123456789");
 sem.isEqualTo("1.2.3+sha123456789"); // true

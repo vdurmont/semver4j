@@ -8,7 +8,6 @@ import org.junit.runners.JUnit4;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -140,11 +139,59 @@ public class SemverTest {
         verify(req).isSatisfiedBy(semver);
     }
 
-    @Test public void rewrite_complete_and_test_the_modifiers() {
-        fail();
+    @Test public void withIncMajor_test() {
+        Semver semver = new Semver("1.2.3-beta.4+sha123456789");
+        semver.withIncMajor(2).isEqualTo("3.2.3-beta.4+sha123456789");
+    }
+
+    @Test public void withIncMinor_test() {
+        Semver semver = new Semver("1.2.3-beta.4+sha123456789");
+        semver.withIncMinor(2).isEqualTo("1.4.3-beta.4+sha123456789");
+    }
+
+    @Test public void withIncPatch_test() {
+        Semver semver = new Semver("1.2.3-beta.4+sha123456789");
+        semver.withIncPatch(2).isEqualTo("1.2.5-beta.4+sha123456789");
+    }
+
+    @Test public void withClearedSuffix_test() {
+        Semver semver = new Semver("1.2.3-beta.4+sha123456789");
+        semver.withClearedSuffix().isEqualTo("1.2.3+sha123456789");
+    }
+
+    @Test public void withClearedBuild_test() {
+        Semver semver = new Semver("1.2.3-beta.4+sha123456789");
+        semver.withClearedBuild().isEqualTo("1.2.3-beta.4");
+    }
+
+    @Test public void withClearedSuffixAndBuild_test() {
+        Semver semver = new Semver("1.2.3-beta.4+sha123456789");
+        semver.withClearedSuffixAndBuild().isEqualTo("1.2.3");
+    }
+
+    @Test public void nextMajor_test() {
+        Semver semver = new Semver("1.2.3-beta.4+sha123456789");
+        semver.nextMajor().isEqualTo("2.0.0");
+    }
+
+    @Test public void nextMinor_test() {
+        Semver semver = new Semver("1.2.3-beta.4+sha123456789");
+        semver.nextMinor().isEqualTo("1.3.0");
+    }
+
+    @Test public void nextPatch_test() {
+        Semver semver = new Semver("1.2.3-beta.4+sha123456789");
+        semver.nextPatch().isEqualTo("1.2.4");
     }
 
     @Test public void diff() {
-        fail();
+        Semver sem = new Semver("1.2.3-beta.4+sha899d8g79f87");
+        assertEquals(Semver.VersionDiff.NONE, sem.diff("1.2.3-beta.4+sha899d8g79f87"));
+        assertEquals(Semver.VersionDiff.MAJOR, sem.diff("2.3.4-alpha.5+sha32iddfu987"));
+        assertEquals(Semver.VersionDiff.MINOR, sem.diff("1.3.4-alpha.5+sha32iddfu987"));
+        assertEquals(Semver.VersionDiff.PATCH, sem.diff("1.2.4-alpha.5+sha32iddfu987"));
+        assertEquals(Semver.VersionDiff.SUFFIX, sem.diff("1.2.3-alpha.4+sha32iddfu987"));
+        assertEquals(Semver.VersionDiff.SUFFIX, sem.diff("1.2.3-beta.5+sha32iddfu987"));
+        assertEquals(Semver.VersionDiff.BUILD, sem.diff("1.2.3-beta.4+sha32iddfu987"));
     }
 }
