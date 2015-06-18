@@ -8,7 +8,6 @@ import org.junit.runners.JUnit4;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -133,14 +132,10 @@ public class SemverTest {
         assertTrue(semver.isEquivalentTo(version2));
     }
 
-    @Test public void statisfiescalls_the_requirement() {
+    @Test public void statisfies_calls_the_requirement() {
         Requirement req = mock(Requirement.class);
         Semver semver = new Semver("1.2.2");
         semver.satisfies(req);
         verify(req).isSatisfiedBy(semver);
-    }
-
-    @Test public void test_all_the_methods() {
-        fail();
     }
 }

@@ -325,26 +325,61 @@ public class Semver implements Comparable<Semver> {
         return "Semver(" + this.value + ")";
     }
 
+    /**
+     * Returns the version as a String
+     *
+     * @return the version as a String
+     */
     public String getValue() {
         return value;
     }
 
+    /**
+     * Returns the major part of the version.
+     * Example: for "1.2.3" => 1
+     *
+     * @return the major part of the version
+     */
     public Integer getMajor() {
         return this.major;
     }
 
+    /**
+     * Returns the minor part of the version.
+     * Example: for "1.2.3" => 2
+     *
+     * @return the minor part of the version
+     */
     public Integer getMinor() {
         return this.minor;
     }
 
+    /**
+     * Returns the patch part of the version.
+     * Example: for "1.2.3" => 3
+     *
+     * @return the patch part of the version
+     */
     public Integer getPatch() {
         return this.patch;
     }
 
+    /**
+     * Returns the suffix of the version.
+     * Example: for "1.2.3-beta.4+sha98450956" => {"beta", "4"}
+     *
+     * @return the suffix of the version
+     */
     public String[] getSuffixTokens() {
         return suffixTokens;
     }
 
+    /**
+     * Returns the build of the version.
+     * Example: for "1.2.3-beta.4+sha98450956" => "sha98450956"
+     *
+     * @return the build of the version
+     */
     public String getBuild() {
         return build;
     }
@@ -360,8 +395,22 @@ public class Semver implements Comparable<Semver> {
         NONE, MAJOR, MINOR, PATCH, SUFFIX, BUILD
     }
 
-    // TODO doc
+    /**
+     * The different types of supported version systems.
+     */
     public enum SemverType {
-        DEFAULT, NPM
+        /**
+         * The default type of version.
+         * Major, minor and patch parts are required.
+         * Suffixes an build are optional.
+         */
+        DEFAULT,
+
+        /**
+         * Follows the rules of NPM.
+         * Supports ^, x, *, ~, and more.
+         * See https://github.com/npm/node-semver
+         */
+        NPM
     }
 }
