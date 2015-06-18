@@ -140,10 +140,6 @@ public class SemverTest {
         verify(req).isSatisfiedBy(semver);
     }
 
-    @Test public void statisfies_with_a_string() {
-        fail();
-    }
-
     @Test public void rewrite_complete_and_test_the_modifiers() {
         fail();
     }

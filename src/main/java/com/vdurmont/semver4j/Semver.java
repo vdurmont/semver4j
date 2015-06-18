@@ -122,6 +122,28 @@ public class Semver implements Comparable<Semver> {
     }
 
     /**
+     * Check if the version satisfies a requirement
+     *
+     * @param requirement the requirement
+     *
+     * @return true if the version satisfies the requirement
+     */
+    public boolean satisfies(String requirement) {
+        Requirement req;
+        switch (this.type) {
+            case STRICT:
+                req = Requirement.buildStrict(requirement);
+                break;
+            case NPM:
+                req = Requirement.buildNPM(requirement);
+                break;
+            default:
+                throw new SemverException("Invalid requirement type: " + type);
+        }
+        return this.satisfies(req);
+    }
+
+    /**
      * @see #isGreaterThan(Semver)
      */
     public boolean isGreaterThan(String version) {

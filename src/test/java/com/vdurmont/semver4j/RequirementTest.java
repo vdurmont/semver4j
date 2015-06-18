@@ -9,7 +9,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -288,10 +287,6 @@ public class RequirementTest {
 
         verify(req1).isSatisfiedBy(version);
         verify(req2).isSatisfiedBy(version);
-    }
-
-    @Test public void use_constructors() {
-        fail();
     }
 
     private static void assertIsRange(Requirement requirement, String version, Range.RangeOperator operator) {
