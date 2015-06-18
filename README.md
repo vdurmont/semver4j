@@ -3,6 +3,7 @@
 > This library is under development and no stable version has been released yet.  
 > The API can change at any moment.
 
+[![Build Status](https://travis-ci.org/vdurmont/semver4j.svg?branch=master)](https://travis-ci.org/vdurmont/semver4j)
 [![License Info](http://img.shields.io/badge/license-The%20MIT%20License-brightgreen.svg)](https://github.com/vdurmont/semver4j/blob/master/LICENSE.md)
 
 **Semver4j** is a lightweight Java library that helps you handling versions. It follows the rules of the [semantic versioning](http://semver.org) specification and provides several versioning modes: strict, NPM...
