@@ -8,6 +8,7 @@ import org.junit.runners.JUnit4;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -137,5 +138,17 @@ public class SemverTest {
         Semver semver = new Semver("1.2.2");
         semver.satisfies(req);
         verify(req).isSatisfiedBy(semver);
+    }
+
+    @Test public void statisfies_with_a_string() {
+        fail();
+    }
+
+    @Test public void rewrite_complete_and_test_the_modifiers() {
+        fail();
+    }
+
+    @Test public void diff() {
+        fail();
     }
 }

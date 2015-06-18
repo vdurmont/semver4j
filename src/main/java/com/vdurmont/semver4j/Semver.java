@@ -14,7 +14,7 @@ public class Semver implements Comparable<Semver> {
     private final SemverType type;
 
     public Semver(String value) {
-        this(value, SemverType.DEFAULT);
+        this(value, SemverType.STRICT);
     }
 
     public Semver(String value, SemverType type) {
@@ -101,7 +101,7 @@ public class Semver implements Comparable<Semver> {
         this.validate(type);
     }
 
-    public void validate(SemverType type) {
+    private void validate(SemverType type) {
         if (this.minor == null && type != SemverType.NPM) {
             throw new SemverException("Invalid version (no minor version): " + value);
         }
@@ -404,7 +404,7 @@ public class Semver implements Comparable<Semver> {
          * Major, minor and patch parts are required.
          * Suffixes an build are optional.
          */
-        DEFAULT,
+        STRICT,
 
         /**
          * Follows the rules of NPM.
