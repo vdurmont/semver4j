@@ -64,6 +64,20 @@ public class SemverTest {
         assertIsSemver(semverWithSpace, "1.2.3-beta.11+sha.0nsfgkjkjsdf", 1, 2, 3, new String[]{"beta", "11"}, "sha.0nsfgkjkjsdf");
     }
 
+    @Test
+    public void loose_constructor_test_only_major_and_minor() {
+        String version = "1.2-beta.11+sha.0nsfgkjkjsdf";
+        Semver semver = new Semver(version, Semver.SemverType.LOOSE);
+        assertIsSemver(semver, version, 1, 2, null, new String[]{"beta", "11"}, "sha.0nsfgkjkjsdf");
+    }
+
+    @Test
+    public void loose_constructor_test_only_major() {
+        String version = "1-beta.11+sha.0nsfgkjkjsdf";
+        Semver semver = new Semver(version, Semver.SemverType.LOOSE);
+        assertIsSemver(semver, version, 1, null, null, new String[]{"beta", "11"}, "sha.0nsfgkjkjsdf");
+    }
+
     private static void assertIsSemver(Semver semver, String value, Integer major, Integer minor, Integer patch, String[] suffixTokens, String build) {
         assertEquals(value, semver.getValue());
         assertEquals(major, semver.getMajor());

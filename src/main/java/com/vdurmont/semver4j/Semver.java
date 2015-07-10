@@ -56,7 +56,7 @@ public class Semver implements Comparable<Semver> {
             try {
                 minor = Integer.valueOf(mainTokens[1]);
             } catch (IndexOutOfBoundsException e) {
-                if (type != SemverType.NPM) {
+                if (type == SemverType.STRICT) {
                     throw new SemverException("Invalid version (no minor version): " + value);
                 }
             } catch (NumberFormatException e) {
@@ -67,7 +67,7 @@ public class Semver implements Comparable<Semver> {
             try {
                 patch = Integer.valueOf(mainTokens[2]);
             } catch (IndexOutOfBoundsException e) {
-                if (type != SemverType.NPM) {
+                if (type == SemverType.STRICT) {
                     throw new SemverException("Invalid version (no patch version): " + value);
                 }
             } catch (NumberFormatException e) {
@@ -104,10 +104,10 @@ public class Semver implements Comparable<Semver> {
     }
 
     private void validate(SemverType type) {
-        if (this.minor == null && type != SemverType.NPM) {
+        if (this.minor == null && type == SemverType.STRICT) {
             throw new SemverException("Invalid version (no minor version): " + value);
         }
-        if (this.patch == null && type != SemverType.NPM) {
+        if (this.patch == null && type == SemverType.STRICT) {
             throw new SemverException("Invalid version (no patch version): " + value);
         }
     }
@@ -135,6 +135,9 @@ public class Semver implements Comparable<Semver> {
         switch (this.type) {
             case STRICT:
                 req = Requirement.buildStrict(requirement);
+                break;
+            case LOOSE:
+                req = Requirement.buildLoose(requirement);
                 break;
             case NPM:
                 req = Requirement.buildNPM(requirement);
@@ -478,9 +481,16 @@ public class Semver implements Comparable<Semver> {
         /**
          * The default type of version.
          * Major, minor and patch parts are required.
-         * Suffixes an build are optional.
+         * Suffixes and build are optional.
          */
         STRICT,
+
+        /**
+         * The default type of version.
+         * Major part is required.
+         * Minor, patch, suffixes and build are optional.
+         */
+        LOOSE,
 
         /**
          * Follows the rules of NPM.
