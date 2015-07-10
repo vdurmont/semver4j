@@ -5,6 +5,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -207,5 +211,30 @@ public class SemverTest {
         assertEquals(Semver.VersionDiff.SUFFIX, sem.diff("1.2.3-alpha.4+sha32iddfu987"));
         assertEquals(Semver.VersionDiff.SUFFIX, sem.diff("1.2.3-beta.5+sha32iddfu987"));
         assertEquals(Semver.VersionDiff.BUILD, sem.diff("1.2.3-beta.4+sha32iddfu987"));
+    }
+
+    @Test public void compareTo_test() {
+        // GIVEN
+        Semver[] array = new Semver[]{
+                new Semver("1.2.3"),
+                new Semver("1.2.3-rc3"),
+                new Semver("1.2.3-rc2"),
+                new Semver("1.2.3-rc1"),
+                new Semver("1.2.2"),
+                new Semver("1.2.2-rc2"),
+                new Semver("1.2.2-rc1"),
+                new Semver("1.2.0")
+        };
+        int len = array.length;
+        List<Semver> list = new ArrayList<>(len);
+        Collections.addAll(list, array);
+
+        // WHEN
+        Collections.sort(list);
+
+        // THEN
+        for (int i = 0; i < list.size(); i++) {
+            assertEquals(array[len - 1 - i], list.get(i));
+        }
     }
 }
