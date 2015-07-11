@@ -152,7 +152,7 @@ public class Semver implements Comparable<Semver> {
      * @see #isGreaterThan(Semver)
      */
     public boolean isGreaterThan(String version) {
-        return this.isGreaterThan(new Semver(version));
+        return this.isGreaterThan(new Semver(version, this.getType()));
     }
 
     /**
@@ -166,10 +166,14 @@ public class Semver implements Comparable<Semver> {
         // Compare the main part
         if (this.getMajor() > version.getMajor()) return true;
         else if (this.getMajor() < version.getMajor()) return false;
-        if (this.getMinor() > version.getMinor()) return true;
-        else if (this.getMinor() < version.getMinor()) return false;
-        if (this.getPatch() > version.getPatch()) return true;
-        else if (this.getPatch() < version.getPatch()) return false;
+
+        int otherMinor = version.getMinor() != null ? version.getMinor() : 0;
+        if (this.getMinor() != null && this.getMinor() > otherMinor) return true;
+        else if (this.getMinor() != null && this.getMinor() < otherMinor) return false;
+
+        int otherPatch = version.getPatch() != null ? version.getPatch() : 0;
+        if (this.getPatch() != null && this.getPatch() > otherPatch) return true;
+        else if (this.getPatch() != null && this.getPatch() < otherPatch) return false;
 
         // Let's take a look at the suffix
         String[] tokens1 = this.getSuffixTokens();

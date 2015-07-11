@@ -237,4 +237,11 @@ public class SemverTest {
             assertEquals(array[len - 1 - i], list.get(i));
         }
     }
+
+    @Test public void compareTo_without_path_or_minor() {
+        assertTrue(new Semver("1.2.3", Semver.SemverType.LOOSE).isGreaterThan("1.2"));
+        assertTrue(new Semver("1.3", Semver.SemverType.LOOSE).isGreaterThan("1.2.3"));
+        assertTrue(new Semver("1.2.3", Semver.SemverType.LOOSE).isGreaterThan("1"));
+        assertTrue(new Semver("2", Semver.SemverType.LOOSE).isGreaterThan("1.2.3"));
+    }
 }
