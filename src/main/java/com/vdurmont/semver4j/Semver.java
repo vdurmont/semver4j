@@ -419,7 +419,7 @@ public class Semver implements Comparable<Semver> {
 
     /**
      * Returns the major part of the version.
-     * Example: for "1.2.3" => 1
+     * Example: for "1.2.3" = 1
      *
      * @return the major part of the version
      */
@@ -429,7 +429,7 @@ public class Semver implements Comparable<Semver> {
 
     /**
      * Returns the minor part of the version.
-     * Example: for "1.2.3" => 2
+     * Example: for "1.2.3" = 2
      *
      * @return the minor part of the version
      */
@@ -439,7 +439,7 @@ public class Semver implements Comparable<Semver> {
 
     /**
      * Returns the patch part of the version.
-     * Example: for "1.2.3" => 3
+     * Example: for "1.2.3" = 3
      *
      * @return the patch part of the version
      */
@@ -449,7 +449,7 @@ public class Semver implements Comparable<Semver> {
 
     /**
      * Returns the suffix of the version.
-     * Example: for "1.2.3-beta.4+sha98450956" => {"beta", "4"}
+     * Example: for "1.2.3-beta.4+sha98450956" = {"beta", "4"}
      *
      * @return the suffix of the version
      */
@@ -459,7 +459,7 @@ public class Semver implements Comparable<Semver> {
 
     /**
      * Returns the build of the version.
-     * Example: for "1.2.3-beta.4+sha98450956" => "sha98450956"
+     * Example: for "1.2.3-beta.4+sha98450956" = "sha98450956"
      *
      * @return the build of the version
      */

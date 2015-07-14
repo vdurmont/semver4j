@@ -16,11 +16,9 @@ Add the dependency to your project:
 <dependency>
   <groupId>com.vdurmont</groupId>
   <artifactId>semver4j</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>0.1.0</version>
 </dependency>
 ```
-
-The project is not available on Maven Central yet so you have to clone this github repository and run `mvn clean install` to add the library in  your local Maven repository.
 
 ## Usage
 
@@ -119,7 +117,7 @@ semNPM.satisfies("^1.1.1"); // true
 
 ### Modifying the version
 
-The `Semver` object is ummutable. However, it provides a set of methods that will help you create new versions:
+The `Semver` object is immutable. However, it provides a set of methods that will help you create new versions:
 * `withIncMajor()` and `withIncMajor(int increment)` returns a `Semver` object with the major part incremented
 * `withIncMinor()` and `withIncMinor(int increment)` returns a `Semver` object with the minor part incremented
 * `withIncPatch()` and `withIncPatch(int increment)` returns a `Semver` object with the patch part incremented
@@ -136,7 +134,7 @@ You can also use built-in versioning methods such as:
 Any pull request or bug report is welcome!  
 If you have any suggestion about new features, you can open an issue.
 
-## TODO
+## Todo
 
 * More testing
 * Support for other versioning systems (eg. cocoapods)
