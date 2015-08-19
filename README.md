@@ -17,7 +17,7 @@ Add the dependency to your project:
 <dependency>
   <groupId>com.vdurmont</groupId>
   <artifactId>semver4j</artifactId>
-  <version>0.1.0</version>
+  <version>0.1.1</version>
 </dependency>
 ```
 
@@ -96,7 +96,7 @@ sem.diff("1.2.3-beta.4+sha32iddfu987"); // BUILD
 ### Requirements
 
 If you want to check if a version satisfies a requirement, use the `satisfies` method.
-* In `STRICT` mode, the requirement can only be another version.  
+* In `STRICT` and `LOOSE` modes, the requirement can only be another version.  
 * In `NPM` mode, the requirement follows [NPM versioning rules](https://github.com/npm/node-semver).
 
 ```java
