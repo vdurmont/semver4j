@@ -21,8 +21,8 @@ public class Semver implements Comparable<Semver> {
 
     public Semver(String value, SemverType type) {
         this.type = type;
-        value = value.trim().toLowerCase();
-        if (type == SemverType.NPM && value.startsWith("v")) {
+        value = value.trim();
+        if (type == SemverType.NPM && (value.startsWith("v") || value.startsWith("V"))) {
             value = value.substring(1).trim();
         }
         this.value = value;

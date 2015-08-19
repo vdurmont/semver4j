@@ -87,7 +87,6 @@ public class SemverTest {
         assertEquals(major, semver.getMajor());
         assertEquals(minor, semver.getMinor());
         assertEquals(patch, semver.getPatch());
-        assertEquals(2, semver.getSuffixTokens().length);
         assertEquals(suffixTokens.length, semver.getSuffixTokens().length);
         for (int i = 0; i < suffixTokens.length; i++) {
             assertEquals(suffixTokens[i], semver.getSuffixTokens()[i]);
@@ -243,5 +242,11 @@ public class SemverTest {
         assertTrue(new Semver("1.3", Semver.SemverType.LOOSE).isGreaterThan("1.2.3"));
         assertTrue(new Semver("1.2.3", Semver.SemverType.LOOSE).isGreaterThan("1"));
         assertTrue(new Semver("2", Semver.SemverType.LOOSE).isGreaterThan("1.2.3"));
+    }
+
+    @Test public void getValue_returns_the_original_value_trimmed_and_with_the_same_case() {
+        String version = "  1.2.3-BETA.11+sHa.0nSFGKjkjsdf  ";
+        Semver semver = new Semver(version);
+        assertEquals("1.2.3-BETA.11+sHa.0nSFGKjkjsdf", semver.getValue());
     }
 }
