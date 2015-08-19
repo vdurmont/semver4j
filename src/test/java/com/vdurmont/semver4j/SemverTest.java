@@ -157,32 +157,32 @@ public class SemverTest {
     }
 
     @Test public void withIncMajor_test() {
-        Semver semver = new Semver("1.2.3-beta.4+sha123456789");
-        semver.withIncMajor(2).isEqualTo("3.2.3-beta.4+sha123456789");
+        Semver semver = new Semver("1.2.3-Beta.4+SHA123456789");
+        semver.withIncMajor(2).isEqualTo("3.2.3-Beta.4+SHA123456789");
     }
 
     @Test public void withIncMinor_test() {
-        Semver semver = new Semver("1.2.3-beta.4+sha123456789");
-        semver.withIncMinor(2).isEqualTo("1.4.3-beta.4+sha123456789");
+        Semver semver = new Semver("1.2.3-Beta.4+SHA123456789");
+        semver.withIncMinor(2).isEqualTo("1.4.3-Beta.4+SHA123456789");
     }
 
     @Test public void withIncPatch_test() {
-        Semver semver = new Semver("1.2.3-beta.4+sha123456789");
-        semver.withIncPatch(2).isEqualTo("1.2.5-beta.4+sha123456789");
+        Semver semver = new Semver("1.2.3-Beta.4+SHA123456789");
+        semver.withIncPatch(2).isEqualTo("1.2.5-Beta.4+SHA123456789");
     }
 
     @Test public void withClearedSuffix_test() {
-        Semver semver = new Semver("1.2.3-beta.4+sha123456789");
-        semver.withClearedSuffix().isEqualTo("1.2.3+sha123456789");
+        Semver semver = new Semver("1.2.3-Beta.4+SHA123456789");
+        semver.withClearedSuffix().isEqualTo("1.2.3+SHA123456789");
     }
 
     @Test public void withClearedBuild_test() {
-        Semver semver = new Semver("1.2.3-beta.4+sha123456789");
-        semver.withClearedBuild().isEqualTo("1.2.3-beta.4");
+        Semver semver = new Semver("1.2.3-Beta.4+sha123456789");
+        semver.withClearedBuild().isEqualTo("1.2.3-Beta.4");
     }
 
     @Test public void withClearedSuffixAndBuild_test() {
-        Semver semver = new Semver("1.2.3-beta.4+sha123456789");
+        Semver semver = new Semver("1.2.3-Beta.4+SHA123456789");
         semver.withClearedSuffixAndBuild().isEqualTo("1.2.3");
     }
 
