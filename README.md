@@ -13,12 +13,20 @@
 
 Add the dependency to your project:
 
+#### Using maven
+
 ```xml
 <dependency>
   <groupId>com.vdurmont</groupId>
   <artifactId>semver4j</artifactId>
-  <version>0.1.1</version>
+  <version>0.2.0</version>
 </dependency>
+```
+
+#### Using gradle
+
+```xml
+compile 'com.vdurmont:semver4j:0.2.0'
 ```
 
 ## Usage
@@ -49,6 +57,24 @@ You can access the different parts of the version using `getMajor()`, `getMinor(
 | STRICT | major, minor, patch | suffix, build |
 | LOOSE | major | minor, patch, suffix, build |
 | NPM | major | minor, patch, suffix, build |
+
+### Is the version stable?
+
+You can check if you're working with a stable version by using `Semver#isStable()`.
+
+A version is stable if its major number is *strictly* positive and it has no suffix.
+
+Examples:
+```java
+// TRUE
+new Semver("1.2.3").isStable();
+new Semver("1.2.3+sHa.0nSFGKjkjsdf").isStable();
+
+// FALSE
+new Semver("0.1.2").isStable());
+new Semver("0.1.2+sHa.0nSFGKjkjsdf").isStable();
+new Semver("1.2.3-BETA.11+sHa.0nSFGKjkjsdf").isStable();
+```
 
 ### Comparing the versions
 
