@@ -7,6 +7,7 @@ import java.util.Objects;
  * (see http://semver.org)
  */
 public class Semver implements Comparable<Semver> {
+    private final String originalValue;
     private final String value;
     private final Integer major;
     private final Integer minor;
@@ -20,6 +21,7 @@ public class Semver implements Comparable<Semver> {
     }
 
     public Semver(String value, SemverType type) {
+        this.originalValue = value;
         this.type = type;
         value = value.trim();
         if (type == SemverType.NPM && (value.startsWith("v") || value.startsWith("V"))) {
@@ -264,6 +266,17 @@ public class Semver implements Comparable<Semver> {
     }
 
     /**
+     * Determines if the current version is stable or not.
+     * Stable version have a major version number > 0 and no suffix tokens.
+     *
+     * @return true if the current version is stable
+     */
+    public boolean isStable() {
+        return (this.getMajor() != null && this.getMajor() > 0) &&
+                (this.getSuffixTokens() == null || this.getSuffixTokens().length == 0);
+    }
+
+    /**
      * @see #diff(Semver)
      */
     public VersionDiff diff(String version) {
@@ -406,6 +419,15 @@ public class Semver implements Comparable<Semver> {
 
     @Override public String toString() {
         return "Semver(" + this.value + ")";
+    }
+
+    /**
+     * Get the original value as a string
+     *
+     * @return the original string passed in the constructor
+     */
+    public String getOriginalValue() {
+        return originalValue;
     }
 
     /**

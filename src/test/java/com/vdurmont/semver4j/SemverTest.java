@@ -249,4 +249,12 @@ public class SemverTest {
         Semver semver = new Semver(version);
         assertEquals("1.2.3-BETA.11+sHa.0nSFGKjkjsdf", semver.getValue());
     }
+
+    @Test public void isStable_test() {
+        assertTrue(new Semver("1.2.3+sHa.0nSFGKjkjsdf").isStable());
+        assertTrue(new Semver("1.2.3").isStable());
+        assertFalse(new Semver("1.2.3-BETA.11+sHa.0nSFGKjkjsdf").isStable());
+        assertFalse(new Semver("0.1.2+sHa.0nSFGKjkjsdf").isStable());
+        assertFalse(new Semver("0.1.2").isStable());
+    }
 }
