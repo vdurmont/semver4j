@@ -267,7 +267,7 @@ public class Semver implements Comparable<Semver> {
 
     /**
      * Determines if the current version is stable or not.
-     * Stable version have a major version number > 0 and no suffix tokens.
+     * Stable version have a major version number strictly positive and no suffix tokens.
      *
      * @return true if the current version is stable
      */
