@@ -144,6 +144,9 @@ public class Semver implements Comparable<Semver> {
             case NPM:
                 req = Requirement.buildNPM(requirement);
                 break;
+            case COCOAPODS:
+                req = Requirement.buildCocoapods(requirement);
+                break;
             default:
                 throw new SemverException("Invalid requirement type: " + type);
         }

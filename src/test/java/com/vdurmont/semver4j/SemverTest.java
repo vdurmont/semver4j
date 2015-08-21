@@ -112,6 +112,13 @@ public class SemverTest {
         assertEquals(build, semver.getBuild());
     }
 
+    @Test public void statisfies_with_cocoapods() {
+        String version = "1.2.3";
+        Semver semver = new Semver(version, Semver.SemverType.COCOAPODS);
+        assertTrue(semver.satisfies("~> 1.2.1"));
+        assertFalse(semver.satisfies("~> 1.3.1"));
+    }
+
     @Test public void isGreaterThan_test() {
         // 1.0.0-alpha < 1.0.0-alpha.1 < 1.0.0-alpha.beta < 1.0.0-beta < 1.0.0-beta.2 < 1.0.0-beta.11 < 1.0.0-rc.1 < 1.0.0
 
