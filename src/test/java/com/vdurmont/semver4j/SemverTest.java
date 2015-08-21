@@ -112,11 +112,14 @@ public class SemverTest {
         assertEquals(build, semver.getBuild());
     }
 
-    @Test public void statisfies_with_cocoapods() {
-        String version = "1.2.3";
-        Semver semver = new Semver(version, Semver.SemverType.COCOAPODS);
-        assertTrue(semver.satisfies("~> 1.2.1"));
-        assertFalse(semver.satisfies("~> 1.3.1"));
+    @Test public void statisfies_works_will_all_the_types() {
+        // Used to prevent bugs when we add a new type
+        for (Semver.SemverType type : Semver.SemverType.values()) {
+            String version = "1.2.3";
+            Semver semver = new Semver(version, type);
+            assertTrue(semver.satisfies("1.2.3"));
+            assertFalse(semver.satisfies("4.5.6"));
+        }
     }
 
     @Test public void isGreaterThan_test() {
