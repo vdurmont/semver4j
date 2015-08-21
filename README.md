@@ -7,7 +7,7 @@
 [![Coverage Status](https://coveralls.io/repos/vdurmont/semver4j/badge.svg?branch=master&service=github)](https://coveralls.io/github/vdurmont/semver4j?branch=master)
 [![License Info](http://img.shields.io/badge/license-The%20MIT%20License-brightgreen.svg)](https://github.com/vdurmont/semver4j/blob/master/LICENSE.md)
 
-**Semver4j** is a lightweight Java library that helps you handling versions. It follows the rules of the [semantic versioning](http://semver.org) specification and provides several versioning modes: strict, NPM, Cocoapods...
+**Semver4j** is a lightweight Java library that helps you handling versions. It follows the rules of the [semantic versioning](http://semver.org) specification and provides several versioning modes: strict, NPM, CocoaPods...
 
 ## Installation
 
@@ -19,14 +19,14 @@ Add the dependency to your project:
 <dependency>
   <groupId>com.vdurmont</groupId>
   <artifactId>semver4j</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
 </dependency>
 ```
 
 #### Using gradle
 
 ```xml
-compile 'com.vdurmont:semver4j:1.0.0'
+compile 'com.vdurmont:semver4j:1.0.1'
 ```
 
 ## Usage
@@ -142,7 +142,7 @@ semNPM.satisfies("1.1.*"); // false
 semNPM.satisfies("~1.2.1"); // true
 semNPM.satisfies("^1.1.1"); // true
 
-// COCOAPODS mode (those are just examples, check Cocoapods documentation to see all the cases)
+// COCOAPODS mode (those are just examples, check CocoaPods documentation to see all the cases)
 Semver semPOD = new Semver("1.2.3", SemverType.COCOAPODS);
 semPOD.satisfies("> 1.2.2"); // true
 semPOD.satisfies("~> 1.2.1"); // true

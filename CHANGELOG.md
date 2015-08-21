@@ -1,8 +1,12 @@
 # Changelog
 
+## v1.0.1
+
+* Fix a bug that prevented the usage of `Semver#statisfies(String)` with CocoaPods
+
 ## v1.0.0
 
-* Add support for Cocoapods
+* Add support for CocoaPods
 
 ## v0.2.0
 
