@@ -527,7 +527,7 @@ public class Semver implements Comparable<Semver> {
 
         /**
          * Follows the rules of Cocoapods.
-         * Supports >, >=, <, <= and ~>
+         * Supports optimistic and comparison operators
          * See https://guides.cocoapods.org/using/the-podfile.html
          */
         COCOAPODS
