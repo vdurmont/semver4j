@@ -68,6 +68,24 @@ public class SemverTest {
         assertIsSemver(semverWithSpace, "1.2.3-beta.11+sha.0nsfgkjkjsdf", 1, 2, 3, new String[]{"beta", "11"}, "sha.0nsfgkjkjsdf");
     }
 
+    @Test public void cocoapods_constructor_test_full_version() {
+        String version = "1.2.3-beta.11+sha.0nsfgkjkjsdf";
+        Semver semver = new Semver(version, Semver.SemverType.COCOAPODS);
+        assertIsSemver(semver, version, 1, 2, 3, new String[]{"beta", "11"}, "sha.0nsfgkjkjsdf");
+    }
+
+    @Test public void cocoapods_constructor_test_only_major_and_minor() {
+        String version = "1.2-beta.11+sha.0nsfgkjkjsdf";
+        Semver semver = new Semver(version, Semver.SemverType.COCOAPODS);
+        assertIsSemver(semver, version, 1, 2, null, new String[]{"beta", "11"}, "sha.0nsfgkjkjsdf");
+    }
+
+    @Test public void cocoapods_constructor_test_only_major() {
+        String version = "1-beta.11+sha.0nsfgkjkjsdf";
+        Semver semver = new Semver(version, Semver.SemverType.COCOAPODS);
+        assertIsSemver(semver, version, 1, null, null, new String[]{"beta", "11"}, "sha.0nsfgkjkjsdf");
+    }
+
     @Test
     public void loose_constructor_test_only_major_and_minor() {
         String version = "1.2-beta.11+sha.0nsfgkjkjsdf";

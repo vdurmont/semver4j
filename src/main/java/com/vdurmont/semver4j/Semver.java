@@ -523,6 +523,13 @@ public class Semver implements Comparable<Semver> {
          * Supports ^, x, *, ~, and more.
          * See https://github.com/npm/node-semver
          */
-        NPM
+        NPM,
+
+        /**
+         * Follows the rules of Cocoapods.
+         * Supports >, >=, <, <= and ~>
+         * See https://guides.cocoapods.org/using/the-podfile.html
+         */
+        COCOAPODS
     }
 }

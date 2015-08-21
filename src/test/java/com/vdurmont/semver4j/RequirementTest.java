@@ -60,49 +60,49 @@ public class RequirementTest {
 
     @Test public void tildeRequirement_npm_full_version() {
         // ~1.2.3 := >=1.2.3 <1.(2+1).0 := >=1.2.3 <1.3.0
-        tildeTest("1.2.3", "1.2.3", "1.3.0");
+        tildeTest("1.2.3", "1.2.3", "1.3.0", Semver.SemverType.NPM);
     }
 
     @Test public void tildeRequirement_npm_only_major_and_minor() {
         // ~1.2 := >=1.2.0 <1.(2+1).0 := >=1.2.0 <1.3.0
-        tildeTest("1.2", "1.2.0", "1.3.0");
-        tildeTest("1.2.x", "1.2.0", "1.3.0");
-        tildeTest("1.2.*", "1.2.0", "1.3.0");
+        tildeTest("1.2", "1.2.0", "1.3.0", Semver.SemverType.NPM);
+        tildeTest("1.2.x", "1.2.0", "1.3.0", Semver.SemverType.NPM);
+        tildeTest("1.2.*", "1.2.0", "1.3.0", Semver.SemverType.NPM);
     }
 
     @Test public void tildeRequirement_npm_only_major() {
         // ~1 := >=1.0.0 <(1+1).0.0 := >=1.0.0 <2.0.0
-        tildeTest("1", "1.0.0", "2.0.0");
-        tildeTest("1.x", "1.0.0", "2.0.0");
-        tildeTest("1.x.x", "1.0.0", "2.0.0");
-        tildeTest("1.*", "1.0.0", "2.0.0");
-        tildeTest("1.*.*", "1.0.0", "2.0.0");
+        tildeTest("1", "1.0.0", "2.0.0", Semver.SemverType.NPM);
+        tildeTest("1.x", "1.0.0", "2.0.0", Semver.SemverType.NPM);
+        tildeTest("1.x.x", "1.0.0", "2.0.0", Semver.SemverType.NPM);
+        tildeTest("1.*", "1.0.0", "2.0.0", Semver.SemverType.NPM);
+        tildeTest("1.*.*", "1.0.0", "2.0.0", Semver.SemverType.NPM);
     }
 
     @Test public void tildeRequirement_npm_full_version_major_0() {
         // ~0.2.3 := >=0.2.3 <0.(2+1).0 := >=0.2.3 <0.3.0
-        tildeTest("0.2.3", "0.2.3", "0.3.0");
+        tildeTest("0.2.3", "0.2.3", "0.3.0", Semver.SemverType.NPM);
     }
 
     @Test public void tildeRequirement_npm_only_major_and_minor_with_major_0() {
         // ~0.2 := >=0.2.0 <0.(2+1).0 := >=0.2.0 <0.3.0
-        tildeTest("0.2", "0.2.0", "0.3.0");
-        tildeTest("0.2.x", "0.2.0", "0.3.0");
-        tildeTest("0.2.*", "0.2.0", "0.3.0");
+        tildeTest("0.2", "0.2.0", "0.3.0", Semver.SemverType.NPM);
+        tildeTest("0.2.x", "0.2.0", "0.3.0", Semver.SemverType.NPM);
+        tildeTest("0.2.*", "0.2.0", "0.3.0", Semver.SemverType.NPM);
     }
 
     @Test public void tildeRequirement_npm_only_major_with_major_0() {
         // ~0 := >=0.0.0 <(0+1).0.0 := >=0.0.0 <1.0.0
-        tildeTest("0", "0.0.0", "1.0.0");
-        tildeTest("0.x", "0.0.0", "1.0.0");
-        tildeTest("0.x.x", "0.0.0", "1.0.0");
-        tildeTest("0.*", "0.0.0", "1.0.0");
-        tildeTest("0.*.*", "0.0.0", "1.0.0");
+        tildeTest("0", "0.0.0", "1.0.0", Semver.SemverType.NPM);
+        tildeTest("0.x", "0.0.0", "1.0.0", Semver.SemverType.NPM);
+        tildeTest("0.x.x", "0.0.0", "1.0.0", Semver.SemverType.NPM);
+        tildeTest("0.*", "0.0.0", "1.0.0", Semver.SemverType.NPM);
+        tildeTest("0.*.*", "0.0.0", "1.0.0", Semver.SemverType.NPM);
     }
 
     @Test public void tildeRequirement_npm_with_suffix() {
         // ~1.2.3-beta.2 := >=1.2.3-beta.2 <1.3.0
-        tildeTest("1.2.3-beta.2", "1.2.3-beta.2", "1.3.0");
+        tildeTest("1.2.3-beta.2", "1.2.3-beta.2", "1.3.0", Semver.SemverType.NPM);
     }
 
     @Test public void caretRequirement_npm_full_version() {
@@ -217,6 +217,31 @@ public class RequirementTest {
         assertEquals(new Semver("0.0.0"), req.range.version);
     }
 
+    @Test public void buildCocoapods_with_a_tilde() {
+        Requirement[] reqs = new Requirement[]{
+                Requirement.buildCocoapods(" ~> 1.2.3 "),
+                Requirement.buildCocoapods(" ~> 1.2.3"),
+                Requirement.buildCocoapods("~> 1.2.3 "),
+                Requirement.buildCocoapods(" ~>1.2.3 "),
+                Requirement.buildCocoapods("~>1.2.3 "),
+                Requirement.buildCocoapods("~> 1.2.3"),
+                Requirement.buildCocoapods("~>1.2.3"),
+        };
+
+        for (Requirement req : reqs) {
+            rangeTest(req, "1.2.3", "1.3.0", true);
+        }
+    }
+
+    @Test public void buildCocoapods_with_a_wildcard() {
+        Requirement req = Requirement.buildCocoapods("*");
+        assertNull(req.op);
+        assertNull(req.req1);
+        assertNull(req.req2);
+        assertEquals(Range.RangeOperator.GTE, req.range.op);
+        assertEquals(new Semver("0.0.0"), req.range.version);
+    }
+
     @Test public void isSatisfiedBy_with_a_complex_example() {
         Requirement req = Requirement.buildNPM("1.x || >=2.5.0 || 5.0.0 - 7.2.3");
 
@@ -289,6 +314,27 @@ public class RequirementTest {
         verify(req2).isSatisfiedBy(version);
     }
 
+    @Test public void tildeRequirement_cocoapods() {
+        // '~> 0.1.2' Version 0.1.2 and the versions up to 0.2, not including 0.2 and higher
+        tildeTest("0.1.2", "0.1.2", "0.2.0", Semver.SemverType.COCOAPODS);
+        tildeTest("1.1.2", "1.1.2", "1.2.0", Semver.SemverType.COCOAPODS);
+
+        // '~> 0.1' Version 0.1 and the versions up to 1.0, not including 1.0 and higher
+        tildeTest("0.1", "0.1.0", "1.0.0", Semver.SemverType.COCOAPODS);
+        tildeTest("1.1", "1.1.0", "2.0.0", Semver.SemverType.COCOAPODS);
+
+        // '~> 0' Version 0 and higher, this is basically the same as not having it.
+        Requirement req = Requirement.tildeRequirement("0", Semver.SemverType.COCOAPODS);
+        assertNull(req.op);
+        assertEquals(Range.RangeOperator.GTE, req.range.op);
+        assertTrue(req.range.version.isEquivalentTo("0.0.0"));
+
+        req = Requirement.tildeRequirement("1", Semver.SemverType.COCOAPODS);
+        assertNull(req.op);
+        assertEquals(Range.RangeOperator.GTE, req.range.op);
+        assertTrue(req.range.version.isEquivalentTo("1.0.0"));
+    }
+
     private static void assertIsRange(Requirement requirement, String version, Range.RangeOperator operator) {
         assertNull(requirement.req1);
         assertNull(requirement.op);
@@ -298,8 +344,8 @@ public class RequirementTest {
         assertEquals(operator, range.op);
     }
 
-    private static void tildeTest(String requirement, String lower, String upper) {
-        Requirement req = Requirement.tildeRequirement(requirement, Semver.SemverType.NPM);
+    private static void tildeTest(String requirement, String lower, String upper, Semver.SemverType type) {
+        Requirement req = Requirement.tildeRequirement(requirement, type);
         rangeTest(req, lower, upper, true);
     }
 

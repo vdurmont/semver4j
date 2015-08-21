@@ -75,14 +75,29 @@ public class Requirement {
      * @return the generated requirement
      */
     public static Requirement buildNPM(String requirement) {
+        return buildWithTokenizer(requirement, Semver.SemverType.NPM);
+    }
+
+    /**
+     * Builds a requirement following the rules of Cocoapods.
+     *
+     * @param requirement the requirement as a string
+     *
+     * @return the generated requirement
+     */
+    public static Requirement buildCocoapods(String requirement) {
+        return buildWithTokenizer(requirement, Semver.SemverType.COCOAPODS);
+    }
+
+    private static Requirement buildWithTokenizer(String requirement, Semver.SemverType type) {
         // Tokenize the string
-        List<Tokenizer.Token> tokens = Tokenizer.tokenize(requirement);
+        List<Tokenizer.Token> tokens = Tokenizer.tokenize(requirement, type);
 
         // Tranform the tokens list to a reverse polish notation list
         List<Tokenizer.Token> rpn = toReversePolishNotation(tokens);
 
         // Create the requirement tree by evaluating the rpn list
-        return evaluateReversePolishNotation(rpn.iterator(), Semver.SemverType.NPM);
+        return evaluateReversePolishNotation(rpn.iterator(), type);
     }
 
     /**
@@ -208,18 +223,37 @@ public class Requirement {
      * Allows patch-level changes if a minor version is specified on the comparator. Allows minor-level changes if not.
      */
     protected static Requirement tildeRequirement(String version, Semver.SemverType type) {
-        if (type != Semver.SemverType.NPM) {
-            throw new SemverException("The tilde requirements are only compatible with NPM.");
+        if (type != Semver.SemverType.NPM && type != Semver.SemverType.COCOAPODS) {
+            throw new SemverException("The tilde requirements are only compatible with NPM and Cocoapods.");
         }
         Semver semver = new Semver(version, type);
         Requirement req1 = new Requirement(new Range(extrapolateVersion(semver), Range.RangeOperator.GTE), null, null, null);
 
         String next;
-        if (semver.getMinor() != null) {
-            next = semver.getMajor() + "." + (semver.getMinor() + 1) + ".0";
-        } else {
-            next = (semver.getMajor() + 1) + ".0.0";
+
+        switch (type) {
+            case COCOAPODS: {
+                if (semver.getPatch() != null) {
+                    next = semver.getMajor() + "." + (semver.getMinor() + 1) + ".0";
+                } else if (semver.getMinor() != null) {
+                    next = (semver.getMajor() + 1) + ".0.0";
+                } else {
+                    return req1;
+                }
+            }
+            break;
+            case NPM: {
+                if (semver.getMinor() != null) {
+                    next = semver.getMajor() + "." + (semver.getMinor() + 1) + ".0";
+                } else {
+                    next = (semver.getMajor() + 1) + ".0.0";
+                }
+            }
+            break;
+            default:
+                throw new SemverException("The tilde requirements are only compatible with NPM and Cocoapods.");
         }
+
         Requirement req2 = new Requirement(new Range(next, Range.RangeOperator.LT), null, null, null);
 
         return new Requirement(null, req1, RequirementOperator.AND, req2);
