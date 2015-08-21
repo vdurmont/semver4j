@@ -7,7 +7,7 @@
 [![Coverage Status](https://coveralls.io/repos/vdurmont/semver4j/badge.svg?branch=master&service=github)](https://coveralls.io/github/vdurmont/semver4j?branch=master)
 [![License Info](http://img.shields.io/badge/license-The%20MIT%20License-brightgreen.svg)](https://github.com/vdurmont/semver4j/blob/master/LICENSE.md)
 
-**Semver4j** is a lightweight Java library that helps you handling versions. It follows the rules of the [semantic versioning](http://semver.org) specification and provides several versioning modes: strict, NPM...
+**Semver4j** is a lightweight Java library that helps you handling versions. It follows the rules of the [semantic versioning](http://semver.org) specification and provides several versioning modes: strict, NPM, Cocoapods...
 
 ## Installation
 
@@ -19,14 +19,14 @@ Add the dependency to your project:
 <dependency>
   <groupId>com.vdurmont</groupId>
   <artifactId>semver4j</artifactId>
-  <version>0.2.0</version>
+  <version>1.0.0</version>
 </dependency>
 ```
 
 #### Using gradle
 
 ```xml
-compile 'com.vdurmont:semver4j:0.2.0'
+compile 'com.vdurmont:semver4j:1.0.0'
 ```
 
 ## Usage
@@ -57,6 +57,7 @@ You can access the different parts of the version using `getMajor()`, `getMinor(
 | STRICT | major, minor, patch | suffix, build |
 | LOOSE | major | minor, patch, suffix, build |
 | NPM | major | minor, patch, suffix, build |
+| COCOAPODS | major | minor, patch, suffix, build |
 
 ### Is the version stable?
 
@@ -140,6 +141,12 @@ semNPM.satisfies("1.1.1 || 1.2.3 - 2.0.0"); // true
 semNPM.satisfies("1.1.*"); // false
 semNPM.satisfies("~1.2.1"); // true
 semNPM.satisfies("^1.1.1"); // true
+
+// COCOAPODS mode (those are just examples, check Cocoapods documentation to see all the cases)
+Semver semPOD = new Semver("1.2.3", SemverType.COCOAPODS);
+semPOD.satisfies("> 1.2.2"); // true
+semPOD.satisfies("~> 1.2.1"); // true
+semPOD.satisfies("<= 1.1.1"); // false
 ```
 
 ### Modifying the version
@@ -160,8 +167,3 @@ You can also use built-in versioning methods such as:
 
 Any pull request or bug report is welcome!  
 If you have any suggestion about new features, you can open an issue.
-
-## Todo
-
-* More testing
-* Support for other versioning systems (eg. cocoapods)
