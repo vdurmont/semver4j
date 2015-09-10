@@ -260,9 +260,6 @@ public class RequirementTest {
 
     @Test public void buildIvy_with_latest() {
         Requirement req = Requirement.buildIvy("latest.integration");
-        assertNull(req.op);
-        assertNull(req.req1);
-        assertNull(req.req2);
         assertIsRange(req, "0.0.0", Range.RangeOperator.GTE);
     }
 

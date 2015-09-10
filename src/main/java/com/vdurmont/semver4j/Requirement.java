@@ -6,6 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Stack;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * A requirement will provide an easy way to check if a version is satisfying.
@@ -14,6 +16,27 @@ import java.util.Stack;
  * - NPM: follows the rules of NPM
  */
 public class Requirement {
+    private static final Pattern IVY_DYNAMIC_PATCH_PATTERN = Pattern.compile("(\\d+)\\.(\\d+)\\.\\+");
+    private static final Pattern IVY_DYNAMIC_MINOR_PATTERN = Pattern.compile("(\\d+)\\.\\+");
+    private static final Pattern IVY_LATEST_PATTERN = Pattern.compile("latest\\.\\w+");
+    private static final Pattern IVY_MATH_BOUNDED_PATTERN = Pattern.compile(
+            "(\\[|\\])" + // 1ST GROUP: a square bracket
+                    "([\\d\\.]+)" + // 2ND GROUP: a version
+                    "," + // a comma separator
+                    "([\\d\\.]+)" + // 3RD GROUP: a version
+                    "(\\[|\\])"  // 4TH GROUP: a square bracket
+    );
+    private static final Pattern IVY_MATH_LOWER_UNBOUNDED_PATTERN = Pattern.compile(
+            "\\(," + // a parenthesis and a comma separator
+                    "([\\d\\.]+)" + // 1ST GROUP: a version
+                    "(\\[|\\])"  // 2ND GROUP: a square bracket
+    );
+    private static final Pattern IVY_MATH_UPPER_UNBOUNDED_PATTERN = Pattern.compile(
+            "(\\[|\\])" + // 1ST GROUP: a square bracket
+                    "([\\d\\.]+)" + // 2ND GROUP: a version
+                    ",\\)" // a comma separator and a parenthesis
+    );
+
     protected final Range range;
     protected final Requirement req1;
     protected final RequirementOperator op;
@@ -108,7 +131,54 @@ public class Requirement {
      * @return the generated requirement
      */
     public static Requirement buildIvy(String requirement) {
-        return new Requirement(null, null, null, null);
+        try {
+            return buildLoose(requirement);
+        } catch (SemverException ignored) {
+        }
+
+        Matcher matcher = IVY_DYNAMIC_PATCH_PATTERN.matcher(requirement);
+        if (matcher.find()) {
+            int major = Integer.valueOf(matcher.group(1));
+            int minor = Integer.valueOf(matcher.group(2));
+            Requirement lower = new Requirement(new Range(major + "." + minor + ".0", Range.RangeOperator.GTE), null, null, null);
+            Requirement upper = new Requirement(new Range(major + "." + (minor + 1) + ".0", Range.RangeOperator.LT), null, null, null);
+            return new Requirement(null, lower, RequirementOperator.AND, upper);
+        }
+        matcher = IVY_DYNAMIC_MINOR_PATTERN.matcher(requirement);
+        if (matcher.find()) {
+            int major = Integer.valueOf(matcher.group(1));
+            Requirement lower = new Requirement(new Range(major + ".0.0", Range.RangeOperator.GTE), null, null, null);
+            Requirement upper = new Requirement(new Range((major + 1) + ".0.0", Range.RangeOperator.LT), null, null, null);
+            return new Requirement(null, lower, RequirementOperator.AND, upper);
+        }
+        matcher = IVY_LATEST_PATTERN.matcher(requirement);
+        if (matcher.find()) {
+            return new Requirement(new Range("0.0.0", Range.RangeOperator.GTE), null, null, null);
+        }
+        matcher = IVY_MATH_BOUNDED_PATTERN.matcher(requirement);
+        if (matcher.find()) {
+            Range.RangeOperator lowerOp = "[".equals(matcher.group(1)) ? Range.RangeOperator.GTE : Range.RangeOperator.GT;
+            Semver lowerVersion = new Semver(matcher.group(2), Semver.SemverType.LOOSE);
+            Semver upperVersion = new Semver(matcher.group(3), Semver.SemverType.LOOSE);
+            Range.RangeOperator upperOp = "]".equals(matcher.group(4)) ? Range.RangeOperator.LTE : Range.RangeOperator.LT;
+            Requirement lower = new Requirement(new Range(extrapolateVersion(lowerVersion), lowerOp), null, null, null);
+            Requirement upper = new Requirement(new Range(extrapolateVersion(upperVersion), upperOp), null, null, null);
+            return new Requirement(null, lower, RequirementOperator.AND, upper);
+        }
+        matcher = IVY_MATH_LOWER_UNBOUNDED_PATTERN.matcher(requirement);
+        if (matcher.find()) {
+            Semver version = new Semver(matcher.group(1), Semver.SemverType.LOOSE);
+            Range.RangeOperator op = "]".equals(matcher.group(2)) ? Range.RangeOperator.LTE : Range.RangeOperator.LT;
+            return new Requirement(new Range(extrapolateVersion(version), op), null, null, null);
+        }
+        matcher = IVY_MATH_UPPER_UNBOUNDED_PATTERN.matcher(requirement);
+        if (matcher.find()) {
+            Range.RangeOperator op = "[".equals(matcher.group(1)) ? Range.RangeOperator.GTE : Range.RangeOperator.GT;
+            Semver version = new Semver(matcher.group(2), Semver.SemverType.LOOSE);
+            return new Requirement(new Range(extrapolateVersion(version), op), null, null, null);
+        }
+
+        throw new SemverException("Invalid requirement");
     }
 
     /**
@@ -388,6 +458,13 @@ public class Requirement {
 
             throw new RuntimeException("Code error. Unknown RequirementOperator: " + this.op); // Should never happen
         }
+    }
+
+    @Override public String toString() {
+        if (this.range != null) {
+            return "Requirement{" + this.range + "}";
+        }
+        return "Requirement{" + this.req1 + " " + this.op + " " + this.req2 + "}";
     }
 
     /**

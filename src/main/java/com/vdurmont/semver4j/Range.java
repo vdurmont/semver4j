@@ -35,6 +35,10 @@ public class Range {
         throw new RuntimeException("Code error. Unknown RangeOperator: " + this.op); // Should never happen
     }
 
+    @Override public String toString() {
+        return "(" + this.op + ", " + this.version + ")";
+    }
+
     public enum RangeOperator {
         /**
          * The version and the requirement are equivalent

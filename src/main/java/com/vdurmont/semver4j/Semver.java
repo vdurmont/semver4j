@@ -147,6 +147,9 @@ public class Semver implements Comparable<Semver> {
             case COCOAPODS:
                 req = Requirement.buildCocoapods(requirement);
                 break;
+            case IVY:
+                req = Requirement.buildIvy(requirement);
+                break;
             default:
                 throw new SemverException("Invalid requirement type: " + type);
         }
