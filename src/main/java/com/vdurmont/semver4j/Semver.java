@@ -533,6 +533,13 @@ public class Semver implements Comparable<Semver> {
          * Supports optimistic and comparison operators
          * See https://guides.cocoapods.org/using/the-podfile.html
          */
-        COCOAPODS
+        COCOAPODS,
+
+        /**
+         * Follows the rules of ivy.
+         * Supports dynamic parts (eg: 4.2.+) and ranges
+         * See http://ant.apache.org/ivy/history/latest-milestone/ivyfile/dependency.html
+         */
+        IVY
     }
 }

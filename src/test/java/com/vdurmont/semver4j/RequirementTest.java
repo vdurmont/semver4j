@@ -242,6 +242,44 @@ public class RequirementTest {
         assertEquals(new Semver("0.0.0"), req.range.version);
     }
 
+    @Test public void buildIvy_with_a_dynamic_patch() {
+        Requirement req = Requirement.buildIvy("1.2.+");
+        assertEquals(Requirement.RequirementOperator.AND, req.op);
+        assertNull(req.range);
+        assertIsRange(req.req1, "1.2.0", Range.RangeOperator.GTE);
+        assertIsRange(req.req2, "1.3.0", Range.RangeOperator.LT);
+    }
+
+    @Test public void buildIvy_with_a_dynamic_minor() {
+        Requirement req = Requirement.buildIvy("1.+");
+        assertEquals(Requirement.RequirementOperator.AND, req.op);
+        assertNull(req.range);
+        assertIsRange(req.req1, "1.0.0", Range.RangeOperator.GTE);
+        assertIsRange(req.req2, "2.0.0", Range.RangeOperator.LT);
+    }
+
+    @Test public void buildIvy_with_latest() {
+        Requirement req = Requirement.buildIvy("latest.integration");
+        assertNull(req.op);
+        assertNull(req.req1);
+        assertNull(req.req2);
+        assertIsRange(req, "0.0.0", Range.RangeOperator.GTE);
+    }
+
+    @Test public void buildIvy_with_mathematical_bounded_ranges() {
+        rangeTest(Requirement.buildIvy("[1.0,2.0]"), "1.0.0", false, "2.0.0", false);
+        rangeTest(Requirement.buildIvy("[1.0,2.0["), "1.0.0", false, "2.0.0", true);
+        rangeTest(Requirement.buildIvy("]1.0,2.0]"), "1.0.0", true, "2.0.0", false);
+        rangeTest(Requirement.buildIvy("]1.0,2.0["), "1.0.0", true, "2.0.0", true);
+    }
+
+    @Test public void buildIvy_with_mathematical_unbounded_ranges() {
+        assertIsRange(Requirement.buildIvy("[1.0,)"), "1.0.0", Range.RangeOperator.GTE);
+        assertIsRange(Requirement.buildIvy("]1.0,)"), "1.0.0", Range.RangeOperator.GT);
+        assertIsRange(Requirement.buildIvy("(,2.0]"), "2.0.0", Range.RangeOperator.LTE);
+        assertIsRange(Requirement.buildIvy("(,2.0["), "2.0.0", Range.RangeOperator.LT);
+    }
+
     @Test public void isSatisfiedBy_with_a_complex_example() {
         Requirement req = Requirement.buildNPM("1.x || >=2.5.0 || 5.0.0 - 7.2.3");
 
@@ -314,6 +352,20 @@ public class RequirementTest {
         verify(req2).isSatisfiedBy(version);
     }
 
+    @Test public void isSatisfiedBy_with_a_star() {
+        Requirement req = Requirement.buildNPM("*");
+        assertTrue(req.isSatisfiedBy("1.2.3"));
+        assertTrue(req.isSatisfiedBy("2.5.2"));
+        assertTrue(req.isSatisfiedBy("0.2.3"));
+    }
+
+    @Test public void isSatisfiedBy_with_latest() {
+        Requirement req = Requirement.buildNPM("latest");
+        assertTrue(req.isSatisfiedBy("1.2.3"));
+        assertTrue(req.isSatisfiedBy("2.5.2"));
+        assertTrue(req.isSatisfiedBy("0.2.3"));
+    }
+
     @Test public void tildeRequirement_cocoapods() {
         // '~> 0.1.2' Version 0.1.2 and the versions up to 0.2, not including 0.2 and higher
         tildeTest("0.1.2", "0.1.2", "0.2.0", Semver.SemverType.COCOAPODS);
@@ -360,16 +412,20 @@ public class RequirementTest {
     }
 
     private static void rangeTest(Requirement req, String lower, String upper, boolean upperStrict) {
+        rangeTest(req, lower, false, upper, upperStrict);
+    }
+
+    private static void rangeTest(Requirement req, String lower, boolean lowerStrict, String upper, boolean upperStrict) {
         assertNull(req.range);
         assertEquals(Requirement.RequirementOperator.AND, req.op);
 
         Requirement req1 = req.req1;
-        assertEquals(Range.RangeOperator.GTE, req1.range.op);
+        Range.RangeOperator lowOp = lowerStrict ? Range.RangeOperator.GT : Range.RangeOperator.GTE;
+        assertEquals(lowOp, req1.range.op);
         assertEquals(lower, req1.range.version.getValue());
 
-        Range.RangeOperator upOp = upperStrict ? Range.RangeOperator.LT : Range.RangeOperator.LTE;
-
         Requirement req2 = req.req2;
+        Range.RangeOperator upOp = upperStrict ? Range.RangeOperator.LT : Range.RangeOperator.LTE;
         assertEquals(upOp, req2.range.op);
         assertEquals(upper, req2.range.version.getValue());
     }

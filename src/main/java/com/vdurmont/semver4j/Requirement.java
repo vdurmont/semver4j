@@ -101,6 +101,17 @@ public class Requirement {
     }
 
     /**
+     * Builds a requirement following the rules of Ivy.
+     *
+     * @param requirement the requirement as a string
+     *
+     * @return the generated requirement
+     */
+    public static Requirement buildIvy(String requirement) {
+        return new Requirement(null, null, null, null);
+    }
+
+    /**
      * Adaptation of the shutting yard algorithm
      */
     private static List<Tokenizer.Token> toReversePolishNotation(List<Tokenizer.Token> tokens) {
@@ -150,8 +161,8 @@ public class Requirement {
             Tokenizer.Token token = iterator.next();
 
             if (token.type == Tokenizer.TokenType.VERSION) {
-                if ("*".equals(token.value)) {
-                    // Special case for "*"
+                if ("*".equals(token.value) || (type == Semver.SemverType.NPM && "latest".equals(token.value))) {
+                    // Special case for "*" and "latest" in NPM
                     return new Requirement(new Range("0.0.0", Range.RangeOperator.GTE), null, null, null);
                 }
                 Semver version = new Semver(token.value, type);
