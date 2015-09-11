@@ -19,14 +19,14 @@ Add the dependency to your project:
 <dependency>
   <groupId>com.vdurmont</groupId>
   <artifactId>semver4j</artifactId>
-  <version>1.0.1</version>
+  <version>1.1.0</version>
 </dependency>
 ```
 
 #### Using gradle
 
 ```xml
-compile 'com.vdurmont:semver4j:1.0.1'
+compile 'com.vdurmont:semver4j:1.1.0'
 ```
 
 ## Usage
@@ -147,6 +147,12 @@ Semver semPOD = new Semver("1.2.3", SemverType.COCOAPODS);
 semPOD.satisfies("> 1.2.2"); // true
 semPOD.satisfies("~> 1.2.1"); // true
 semPOD.satisfies("<= 1.1.1"); // false
+
+// IVY mode (those are just examples, check Ivy/gradle documentation to see all the cases)
+Semver semIVY = new Semver("1.2.3", SemverType.IVY);
+semIVY.satisfies("1.2.+"); // true
+semIVY.satisfies("(,1.8.9]"); // true
+semIVY.satisfies("[0.2,1.4]"); // true
 ```
 
 ### Modifying the version

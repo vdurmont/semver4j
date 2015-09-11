@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.1.0
+
+* Add support for Ivy requirements (used by gradle)
+
 ## v1.0.1
 
 * Fix a bug that prevented the usage of `Semver#statisfies(String)` with CocoaPods
