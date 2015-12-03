@@ -185,8 +185,8 @@ public class Requirement {
      * Adaptation of the shutting yard algorithm
      */
     private static List<Tokenizer.Token> toReversePolishNotation(List<Tokenizer.Token> tokens) {
-        LinkedList<Tokenizer.Token> queue = new LinkedList<>();
-        Stack<Tokenizer.Token> stack = new Stack<>();
+        LinkedList<Tokenizer.Token> queue = new LinkedList<Tokenizer.Token>();
+        Stack<Tokenizer.Token> stack = new Stack<Tokenizer.Token>();
 
         for (int i = 0; i < tokens.size(); i++) {
             Tokenizer.Token token = tokens.get(i);

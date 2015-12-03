@@ -12,10 +12,10 @@ public class Tokenizer {
     private static final Map<Semver.SemverType, Map<Character, Token>> SPECIAL_CHARS;
 
     static {
-        SPECIAL_CHARS = new HashMap<>();
+        SPECIAL_CHARS = new HashMap<Semver.SemverType, Map<Character, Token>>();
 
         for (Semver.SemverType type : Semver.SemverType.values()) {
-            SPECIAL_CHARS.put(type, new HashMap<>());
+            SPECIAL_CHARS.put(type, new HashMap<Character, Token>());
         }
 
         for (TokenType tokenType : TokenType.values()) {
@@ -51,7 +51,7 @@ public class Tokenizer {
         requirement = requirement.replace("<=", "≤").replace(">=", "≥");
 
 
-        LinkedList<Token> tokens = new LinkedList<>();
+        LinkedList<Token> tokens = new LinkedList<Token>();
         Token previousToken = null;
 
         char[] chars = requirement.toCharArray();
