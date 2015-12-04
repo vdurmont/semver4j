@@ -253,7 +253,7 @@ public class SemverTest {
                 new Semver("1.2.0")
         };
         int len = array.length;
-        List<Semver> list = new ArrayList<>(len);
+        List<Semver> list = new ArrayList<Semver>(len);
         Collections.addAll(list, array);
 
         // WHEN

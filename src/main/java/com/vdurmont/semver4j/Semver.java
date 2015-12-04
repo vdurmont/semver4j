@@ -51,7 +51,9 @@ public class Semver implements Comparable<Semver> {
 
             try {
                 this.major = Integer.valueOf(mainTokens[0]);
-            } catch (NumberFormatException | IndexOutOfBoundsException e) {
+            } catch (NumberFormatException e) {
+                throw new SemverException("Invalid version (no major version): " + value);
+            } catch (IndexOutOfBoundsException e) {
                 throw new SemverException("Invalid version (no major version): " + value);
             }
 
@@ -77,7 +79,9 @@ public class Semver implements Comparable<Semver> {
                     throw new SemverException("Invalid version (no patch version): " + value);
                 }
             }
-        } catch (NumberFormatException | IndexOutOfBoundsException e) {
+        } catch (NumberFormatException e) {
+            throw new SemverException("The version is invalid: " + value);
+        } catch (IndexOutOfBoundsException e) {
             throw new SemverException("The version is invalid: " + value);
         }
         this.minor = minor;
