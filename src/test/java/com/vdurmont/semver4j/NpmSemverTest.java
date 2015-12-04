@@ -27,7 +27,6 @@ public class NpmSemverTest {
     @Parameters
     public static Iterable<Object[]> getParameters() {
         return Arrays.asList(new Object[][] {
-// @formatter:off
             // Concrete versions:
             // (0)
             { "1.2.3", "1.2.3", true, },
@@ -60,7 +59,7 @@ public class NpmSemverTest {
             // X ranges:
 
             // (12) TODO
-//            { "3.1.5", "", true, },
+            { "3.1.5", "", true, },
             // (13)
             { "3.1.5", "*", true, },
             // (14)
@@ -234,13 +233,12 @@ public class NpmSemverTest {
             { "2.0.1", "<=2.0.0", false, },
             // (91)
             { "1.9.9", ">=2.0.0", false, },
-// @formatter:on
         });
     }
 
     @Test
     public void test() {
-        assertEquals(expected, new Semver(version, SemverType.NPM).satisfies(rangeExpression));
+        assertEquals(this.expected, new Semver(this.version, SemverType.NPM).satisfies(this.rangeExpression));
     }
 
 }

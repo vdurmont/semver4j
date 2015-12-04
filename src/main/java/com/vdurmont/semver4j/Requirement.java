@@ -98,6 +98,9 @@ public class Requirement {
      * @return the generated requirement
      */
     public static Requirement buildNPM(String requirement) {
+        if (requirement.isEmpty()) {
+            requirement = "*";
+        }
         return buildWithTokenizer(requirement, Semver.SemverType.NPM);
     }
 

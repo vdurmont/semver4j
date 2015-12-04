@@ -349,6 +349,13 @@ public class RequirementTest {
         verify(req2).isSatisfiedBy(version);
     }
 
+    @Test public void npm_isSatisfiedBy_with_an_empty_string() {
+        Requirement req = Requirement.buildNPM("");
+        assertTrue(req.isSatisfiedBy("1.2.3"));
+        assertTrue(req.isSatisfiedBy("2.5.2"));
+        assertTrue(req.isSatisfiedBy("0.2.3"));
+    }
+
     @Test public void isSatisfiedBy_with_a_star() {
         Requirement req = Requirement.buildNPM("*");
         assertTrue(req.isSatisfiedBy("1.2.3"));
