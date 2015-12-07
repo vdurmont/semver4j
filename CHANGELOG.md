@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.0.0
+
+* Java 6 support
+
 ## v1.1.0
 
 * Add support for Ivy requirements (used by gradle)
