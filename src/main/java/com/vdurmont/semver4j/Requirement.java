@@ -1,5 +1,6 @@
 package com.vdurmont.semver4j;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -8,6 +9,10 @@ import java.util.NoSuchElementException;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.vdurmont.semver4j.Semver.SemverType;
+import com.vdurmont.semver4j.Tokenizer.Token;
+import com.vdurmont.semver4j.Tokenizer.TokenType;
 
 /**
  * A requirement will provide an easy way to check if a version is satisfying.
@@ -119,6 +124,8 @@ public class Requirement {
         // Tokenize the string
         List<Tokenizer.Token> tokens = Tokenizer.tokenize(requirement, type);
 
+        tokens = removeFalsePositiveVersionRanges(tokens);
+
         // Tranform the tokens list to a reverse polish notation list
         List<Tokenizer.Token> rpn = toReversePolishNotation(tokens);
 
@@ -182,6 +189,56 @@ public class Requirement {
         }
 
         throw new SemverException("Invalid requirement");
+    }
+
+    /**
+     * Some requirements may contain versions that look like version ranges. For example ' 0.0.1-SNASHOT ' could be
+     * interpreted incorrectly as a version range from 0.0.1 to SNAPSHOT. This method parses all tokens and looks for
+     * groups of three tokens that are respectively of type [VERSION, HYPHEN, VERSION] and validates that the token
+     * after the hyphen is a valid version string. If it isn't the, three tokens are merged into one (thus creating a
+     * single version token, in which the third token is the build information).
+     * 
+     * @param tokens the tokens contained in the requirement string
+     * 
+     * @return the tokens with any false positive version ranges replaced with version strings
+     */
+    private static List<Token> removeFalsePositiveVersionRanges(List<Token> tokens) {
+        List<Token> result = new ArrayList<Token>();
+        for (int i = 0; i < tokens.size(); i++) {
+            Token token = tokens.get(i);
+            if (thereIsFalsePositiveVersionRange(tokens, i)) {
+                token = new Token(TokenType.VERSION, token.value + '-' + tokens.get(i + 2).value);
+                i += 2;
+            }
+            result.add(token);
+        }
+        return result;
+    }
+
+    private static boolean thereIsFalsePositiveVersionRange(List<Token> tokens, int i) {
+        if (i + 2 >= tokens.size()) {
+            return false;
+        }
+        Token[] suspiciousTokens = new Token[] { tokens.get(i), tokens.get(i + 1), tokens.get(i + 2), };
+        if (!suspiciousTokens[0].type.equals(TokenType.VERSION)) {
+            return false;
+        }
+        if (!suspiciousTokens[2].type.equals(TokenType.VERSION)) {
+            return false;
+        }
+        if (!suspiciousTokens[1].type.equals(TokenType.HYPHEN)) {
+            return false;
+        }
+        return attemptToParse(suspiciousTokens[2].value) == null;
+    }
+
+    private static Semver attemptToParse(String value) {
+        try {
+            return new Semver(value, SemverType.LOOSE);
+        } catch (SemverException e) {
+            // Ignore.
+        }
+        return null;
     }
 
     /**
