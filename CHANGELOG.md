@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.0.1
+
+* Fix ranges support for versions with suffix tokens
+
 ## v2.0.0
 
 * Java 6 support
