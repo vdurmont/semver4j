@@ -1,12 +1,6 @@
 package com.vdurmont.semver4j;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Stack;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -511,13 +505,57 @@ public class Requirement {
             // We have several sub-requirements
             switch (this.op) {
                 case AND:
-                    return this.req1.isSatisfiedBy(version) && this.req2.isSatisfiedBy(version);
+                    try {
+                        List<Range> set = getAllRanges(this, new ArrayList<Range>());
+                        for (Range range : set) {
+                            if (!range.isSatisfiedBy(version)) {
+                                return false;
+                            }
+                        }
+                        if (version.getSuffixTokens().length > 0) {
+                            // Find the set of versions that are allowed to have prereleases
+                            // For example, ^1.2.3-pr.1 desugars to >=1.2.3-pr.1 <2.0.0
+                            // That should allow `1.2.3-pr.2` to pass.
+                            // However, `1.2.4-alpha.notready` should NOT be allowed,
+                            // even though it's within the range set by the comparators.
+                            for (Range range : set) {
+                                if (range.version == null) {
+                                    continue;
+                                }
+                                if (range.version.getSuffixTokens().length>0) {
+                                    Semver allowed = range.version;
+                                    if (Objects.equals(version.getMajor(), allowed.getMajor()) &&
+                                            Objects.equals(version.getMinor(), allowed.getMinor()) &&
+                                            Objects.equals(version.getPatch(), allowed.getPatch())) {
+                                        return true;
+                                    }
+                                }
+                            }
+                            // Version has a -pre, but it's not one of the ones we like.
+                            return false;
+                        }
+                        return true;
+                    } catch (Exception e) {
+                        // Could be that we have a OR in AND - fallback to default test
+                        return this.req1.isSatisfiedBy(version) && this.req2.isSatisfiedBy(version);
+                    }
                 case OR:
                     return this.req1.isSatisfiedBy(version) || this.req2.isSatisfiedBy(version);
             }
-
             throw new RuntimeException("Code error. Unknown RequirementOperator: " + this.op); // Should never happen
         }
+    }
+
+    private List<Range> getAllRanges(Requirement requirement, List<Range> res) {
+        if (requirement.range != null) {
+            res.add(requirement.range);
+        } else if (requirement.op == RequirementOperator.AND) {
+            getAllRanges(requirement.req1, res);
+            getAllRanges(requirement.req2, res);
+        } else {
+            throw new RuntimeException("OR in AND not allowed");
+        }
+        return res;
     }
 
     @Override public String toString() {
