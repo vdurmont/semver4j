@@ -36,7 +36,7 @@ public class NpmSemverTest {
             // Hyphen ranges:
 
             // (2)
-            { "1.2.4-beta+exp.sha.5114f85", "1.2.3 - 2.3.4", true, },
+            { "1.2.4-beta+exp.sha.5114f85", "1.2.3 - 2.3.4", false, },
             // (3)
             { "1.2.4", "1.2.3 - 2.3.4", true, },
             // (4)
@@ -71,7 +71,7 @@ public class NpmSemverTest {
             // (17)
             { "1.0.0-beta", "*", true, },
             // (18)
-            { "3.1.5-beta+exp.sha.5114f85", "3.1.x", true, },
+            { "3.1.5-beta+exp.sha.5114f85", "3.1.x", false, },
             // (19)
             { "3.1.5", "3.1.x", true, },
             // (20)
@@ -104,7 +104,7 @@ public class NpmSemverTest {
             // Tilde ranges:
 
             // (33)
-            { "1.2.4-beta+exp.sha.5114f85", "~1.2.3", true, },
+            { "1.2.4-beta+exp.sha.5114f85", "~1.2.3", false, },
             // (34)
             { "1.2.3", "~1.2.3", true, },
             // (35)
@@ -239,7 +239,7 @@ public class NpmSemverTest {
 
     @Test
     public void test() {
-        assertEquals(this.expected, new Semver(this.version, SemverType.NPM).satisfies(this.rangeExpression));
+        assertEquals(this.version + " , " + this.rangeExpression ,this.expected, new Semver(this.version, SemverType.NPM).satisfies(this.rangeExpression));
     }
 
 }
