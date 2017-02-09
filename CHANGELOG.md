@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.0.2
+
+* Handle prerelease conditions in ranges
+* Fix invalid operator priority
+
 ## v2.0.1
 
 * Fix ranges support for versions with suffix tokens

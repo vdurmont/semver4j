@@ -19,14 +19,14 @@ Add the dependency to your project:
 <dependency>
   <groupId>com.vdurmont</groupId>
   <artifactId>semver4j</artifactId>
-  <version>2.0.1</version>
+  <version>2.0.2</version>
 </dependency>
 ```
 
 #### Using gradle
 
 ```xml
-compile 'com.vdurmont:semver4j:2.0.1'
+compile 'com.vdurmont:semver4j:2.0.2'
 ```
 
 ## Usage
