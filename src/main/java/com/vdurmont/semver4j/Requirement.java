@@ -120,6 +120,8 @@ public class Requirement {
 
         tokens = removeFalsePositiveVersionRanges(tokens);
 
+        tokens = addParentheses(tokens);
+
         // Tranform the tokens list to a reverse polish notation list
         List<Tokenizer.Token> rpn = toReversePolishNotation(tokens);
 
@@ -183,6 +185,29 @@ public class Requirement {
         }
 
         throw new SemverException("Invalid requirement");
+    }
+
+    /**
+     * Return parenthesized expression, giving lowest priority to OR operator
+     *
+     * @param tokens the tokens contained in the requirement string
+     *
+     * @return the tokens with parenthesis
+     */
+    private static List<Token> addParentheses(List<Token> tokens) {
+        List<Token> result = new ArrayList<Token>();
+        result.add(new Token(TokenType.OPENING, "("));
+        for (Token token : tokens) {
+            if (token.type == TokenType.OR) {
+                result.add(new Token(TokenType.CLOSING, ")"));
+                result.add(token);
+                result.add(new Token(TokenType.OPENING, "("));
+            } else {
+                result.add(token);
+            }
+        }
+        result.add(new Token(TokenType.CLOSING, ")"));
+        return result;
     }
 
     /**
