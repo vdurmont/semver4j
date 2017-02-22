@@ -197,9 +197,6 @@ public class RequirementTest {
 
     @Test public void buildNPM_with_hyphen() {
         Requirement[] reqs = new Requirement[]{
-                Requirement.buildNPM("1.2.3-2.3.4"),
-                Requirement.buildNPM("1.2.3 -2.3.4"),
-                Requirement.buildNPM("1.2.3- 2.3.4"),
                 Requirement.buildNPM("1.2.3 - 2.3.4")
         };
 

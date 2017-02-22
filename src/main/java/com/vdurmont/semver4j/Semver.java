@@ -29,7 +29,13 @@ public class Semver implements Comparable<Semver> {
         }
         this.value = value;
 
-        String[] tokens = value.split("-");
+        String[] tokens = null;
+        if(!value.contains("-") && !value.contains("+") && type == SemverType.NPM) {
+            value = value.replaceFirst("(^[0-9]+\\.[0-9]+\\.[0-9]+)([a-zA-z].*)","$1-$2");
+        }
+
+        tokens = value.split("-");
+
         String build = null;
         Integer minor = null;
         Integer patch = null;
@@ -379,6 +385,14 @@ public class Semver implements Comparable<Semver> {
 
     public Semver nextPatch() {
         return with(this.major, this.minor, this.patch + 1, false, false);
+    }
+
+    public Semver zeroMinor() {
+        return new Semver(this.major + ".0.0");
+    }
+
+    public Semver zeroPatch() {
+        return new Semver(this.major + "." + this.minor + ".0");
     }
 
     private Semver with(int major, Integer minor, Integer patch, boolean suffix, boolean build) {

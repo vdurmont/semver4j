@@ -56,24 +56,38 @@ public class Tokenizer {
 
         char[] chars = requirement.toCharArray();
         Token token = null;
-        for (char c : chars) {
+        for (int i = 0; i < chars.length; i++) {
+            char c = chars[i];
             if (c == ' ') continue;
 
             if (specialChars.containsKey(c)) {
-                if (token != null) {
-                    tokens.add(token);
-                    previousToken = token;
-                    token = null;
+                // Then the only valid hypens are the spaced ones, i.e. 1.2.3 - 2.0.0
+                if(specialChars.get(c).type == TokenType.HYPHEN && type == Semver.SemverType.NPM && !(i-1 >= 0 && i+1 < chars.length && chars[i-1] == ' ' && chars[i+1] == ' ')) {
+                    // this must be part of a version
+                    if(token.type == TokenType.VERSION) {
+                        token.append(c);
+                    }
+                    else {
+                        throw new RuntimeException("Unable to tokenize " + requirement);
+                    }
                 }
+                else {
 
-                Token current = specialChars.get(c);
-                if (current.type.isUnary() && previousToken != null && previousToken.type == TokenType.VERSION) {
-                    // Handling the ranges like "≥1.2.3 <4.5.6" by inserting a "AND" binary operator
-                    tokens.add(new Token(TokenType.AND));
+                    if (token != null) {
+                        tokens.add(token);
+                        previousToken = token;
+                        token = null;
+                    }
+
+                    Token current = specialChars.get(c);
+                    if (current.type.isUnary() && previousToken != null && previousToken.type == TokenType.VERSION) {
+                        // Handling the ranges like "≥1.2.3 <4.5.6" by inserting a "AND" binary operator
+                        tokens.add(new Token(TokenType.AND));
+                    }
+
+                    tokens.add(current);
+                    previousToken = current;
                 }
-
-                tokens.add(current);
-                previousToken = current;
             } else {
                 if (token == null) {
                     token = new Token(TokenType.VERSION);
