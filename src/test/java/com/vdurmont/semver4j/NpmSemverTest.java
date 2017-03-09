@@ -172,6 +172,8 @@ public class NpmSemverTest {
             { "0.0.3-alpha", "^0.0.3-beta", false, },
             // (65)
             { "0.0.4", "^0.0.3-beta", false, },
+            // (66)
+            {"2.0.0-alpha.1", "^1.6.19", false},
 
             // Complex ranges:
             // TODO: Add more!
