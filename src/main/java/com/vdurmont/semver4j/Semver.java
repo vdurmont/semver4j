@@ -321,6 +321,12 @@ public class Semver implements Comparable<Semver> {
         return true;
     }
 
+    public Semver toStrict() {
+        Integer minor = this.minor != null ? this.minor : 0;
+        Integer patch = this.patch != null ? this.patch : 0;
+        return Semver.create(SemverType.STRICT, this.major, minor, patch, this.suffixTokens, this.build);
+    }
+
     public Semver withIncMajor() {
         return this.withIncMajor(1);
     }
@@ -382,17 +388,25 @@ public class Semver implements Comparable<Semver> {
     }
 
     private Semver with(int major, Integer minor, Integer patch, boolean suffix, boolean build) {
+        minor = this.minor != null ? minor : null;
+        patch = this.patch != null ? patch : null;
+        String buildStr = build ? this.build : null;
+        String[] suffixTokens = suffix ? this.suffixTokens : null;
+        return Semver.create(this.type, major, minor, patch, suffixTokens, buildStr);
+    }
+
+    private static Semver create(SemverType type, int major, Integer minor, Integer patch, String[] suffix, String build) {
         StringBuilder sb = new StringBuilder()
                 .append(major);
-        if (this.minor != null) {
+        if (minor != null) {
             sb.append(".").append(minor);
         }
-        if (this.patch != null) {
+        if (patch != null) {
             sb.append(".").append(patch);
         }
-        if (suffix) {
+        if (suffix != null) {
             boolean first = true;
-            for (String suffixToken : this.suffixTokens) {
+            for (String suffixToken : suffix) {
                 if (first) {
                     sb.append("-");
                     first = false;
@@ -402,11 +416,11 @@ public class Semver implements Comparable<Semver> {
                 sb.append(suffixToken);
             }
         }
-        if (this.build != null && build) {
-            sb.append("+").append(this.build);
+        if (build != null) {
+            sb.append("+").append(build);
         }
 
-        return new Semver(sb.toString(), this.type);
+        return new Semver(sb.toString(), type);
     }
 
     @Override public boolean equals(Object o) {
