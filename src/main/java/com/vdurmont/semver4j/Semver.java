@@ -31,7 +31,7 @@ public class Semver implements Comparable<Semver> {
 
         String[] tokens = null;
         if(!value.contains("-") && !value.contains("+") && type == SemverType.NPM) {
-            value = value.replaceFirst("(^[0-9]+\\.[0-9]+\\.[0-9]+)([a-zA-z].*)","$1-$2");
+            value = value.replaceFirst("(^[0-9]+\\.[0-9]+\\.[0-9]+)([a-zA-Z].*)","$1-$2");
         }
 
         tokens = value.split("-");

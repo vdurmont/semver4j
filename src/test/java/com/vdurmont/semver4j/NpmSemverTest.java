@@ -244,6 +244,7 @@ public class NpmSemverTest {
             { "3.3.1", ">=2.4.x", true, },
             // (95)
             { "3.3.1alpha", ">=2.4.0", true, },
+            { "3.3.1beta", ">=1.1.1", true, },
         });
     }
 
