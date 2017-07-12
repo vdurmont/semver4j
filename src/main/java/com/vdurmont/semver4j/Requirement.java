@@ -253,7 +253,7 @@ public class Requirement {
 
     private static Semver attemptToParse(String value) {
         try {
-            return new Semver(value, SemverType.LOOSE);
+            return new Semver(value, SemverType.NPM);
         } catch (SemverException e) {
             // Ignore.
         }
