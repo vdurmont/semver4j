@@ -11,7 +11,7 @@ public class Range {
     }
 
     public Range(String version, RangeOperator op) {
-        this(new Semver(version), op);
+        this(new Semver(version, Semver.SemverType.LOOSE), op);
     }
 
     public boolean isSatisfiedBy(String version) {
