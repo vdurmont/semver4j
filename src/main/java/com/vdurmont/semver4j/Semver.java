@@ -428,7 +428,7 @@ public class Semver implements Comparable<Semver> {
     }
 
     @Override public String toString() {
-        return "Semver(" + this.value + ")";
+        return this.getValue();
     }
 
     /**
