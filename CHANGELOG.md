@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.0.3
+
+* Make `Semver.toString` return the same thing as `Semver.getValue`
+
 ## v2.0.2
 
 * Handle prerelease conditions in ranges
