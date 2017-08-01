@@ -174,6 +174,8 @@ public class NpmSemverTest {
             { "0.0.3-alpha", "^0.0.3-beta", false, },
             // (65)
             { "0.0.4", "^0.0.3-beta", false, },
+            // (66)
+            {"2.0.0-alpha.1", "^1.6.19", false},
 
             // Complex ranges:
             // TODO: Add more!
@@ -238,7 +240,16 @@ public class NpmSemverTest {
             // (91)
             { "2.0.1", "<=2.0.0", false, },
             // (92)
-            { "1.9.9", ">=2.0.0", false, }, });
+            { "1.9.9", ">=2.0.0", false, },
+
+            // (93)
+            { "0.0.7", "~1.9.1-6", false, },
+            // (94)
+            { "3.3.1", ">=2.4.x", true, },
+            // (95)
+            { "3.3.1alpha", ">=2.4.0", true, },
+            { "3.3.1beta", ">=1.1.1", true, },
+        });
     }
 
     @Test

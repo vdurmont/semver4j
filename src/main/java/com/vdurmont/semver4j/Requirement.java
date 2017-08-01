@@ -328,6 +328,16 @@ public class Requirement {
                 return hyphenRequirement(token2.value, token3.value, type);
             } else if (token.type.isUnary()) {
                 Tokenizer.Token token2 = iterator.next();
+                Semver version2 = new Semver(token2.value, type);
+                // If we have a version with a wildcard char (like 1.2.x, 1.2.* or 1.2), we need to replace it by 0
+                if (type == SemverType.NPM && (token.type == TokenType.EQ || token.type == TokenType.GT || token.type == TokenType.LT || token.type == TokenType.GTE || token.type == TokenType.LTE)) {
+                   if(version2.getMinor() == null) {
+                       version2 = version2.zeroMinor();
+                   }
+                   else if(version2.getPatch() == null) {
+                       version2 = version2.zeroPatch();
+                   }
+                }
 
                 Range.RangeOperator rangeOp;
                 switch (token.type) {
@@ -354,7 +364,7 @@ public class Requirement {
                         throw new SemverException("Invalid requirement");
                 }
 
-                Range range = new Range(token2.value, rangeOp);
+                Range range = new Range(version2.getValue(), rangeOp);
                 return new Requirement(range, null, null, null);
             } else {
                 Requirement req1 = evaluateReversePolishNotation(iterator, type);
