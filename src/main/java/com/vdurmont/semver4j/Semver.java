@@ -28,8 +28,14 @@ public class Semver implements Comparable<Semver> {
             value = value.substring(1).trim();
         }
         this.value = value;
+        String[] tokens;
+        
+        if (hasPreRelease(value)) {
+            tokens = value.split("-", 2);
+        } else {
+            tokens = new String[] { value };
+        }
 
-        String[] tokens = value.split("-");
         String build = null;
         Integer minor = null;
         Integer patch = null;
@@ -116,6 +122,18 @@ public class Semver implements Comparable<Semver> {
         if (this.patch == null && type == SemverType.STRICT) {
             throw new SemverException("Invalid version (no patch version): " + value);
         }
+    }
+    
+    private boolean hasPreRelease(String version) {
+
+        int firstIndexOfPlus = value.indexOf("+");
+        int firstIndexOfHyphen = value.indexOf("-");
+
+        if (firstIndexOfHyphen == -1) {
+            return false;
+        }
+
+        return firstIndexOfPlus == -1 || firstIndexOfHyphen < firstIndexOfPlus;
     }
 
     /**
