@@ -522,7 +522,6 @@ public class Semver implements Comparable<Semver> {
         STRICT,
 
         /**
-         * The default type of version.
          * Major part is required.
          * Minor, patch, suffixes and build are optional.
          */
