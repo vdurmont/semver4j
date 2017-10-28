@@ -242,6 +242,33 @@ public class SemverTest {
         semver.nextPatch().isEqualTo("1.2.4");
     }
 
+    @Test public void toStrict_test() {
+        String[][] versionGroups = new String[][]{
+            new String[]{"3.0.0-beta.4+sha123456789", "3.0-beta.4+sha123456789", "3-beta.4+sha123456789"},
+            new String[]{"3.0.0+sha123456789", "3.0+sha123456789", "3+sha123456789"},
+            new String[]{"3.0.0-beta.4", "3.0-beta.4", "3-beta.4"},
+            new String[]{"3.0.0", "3.0", "3"},
+        };
+
+        Semver.SemverType[] types = new Semver.SemverType[]{
+            Semver.SemverType.NPM,
+            Semver.SemverType.IVY,
+            Semver.SemverType.LOOSE,
+            Semver.SemverType.COCOAPODS,
+        };
+
+        for(String[] versions: versionGroups) {
+            Semver strict = new Semver(versions[0]);
+            assertEquals(strict, strict.toStrict());
+            for(Semver.SemverType type: types) {
+                for(String version: versions) {
+                    Semver sem = new Semver(version, type);
+                    assertEquals(strict, sem.toStrict());
+                }
+            }
+        }
+    }
+
     @Test public void diff() {
         Semver sem = new Semver("1.2.3-beta.4+sha899d8g79f87");
         assertEquals(Semver.VersionDiff.NONE, sem.diff("1.2.3-beta.4+sha899d8g79f87"));
