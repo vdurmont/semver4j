@@ -99,6 +99,12 @@ public class SemverTest {
         Semver semver = new Semver(version, Semver.SemverType.LOOSE);
         assertIsSemver(semver, version, 1, null, null, new String[]{"beta", "11"}, "sha.0nsfgkjkjsdf");
     }
+    
+    @Test public void default_constructor_test_myltiple_hyphen_signs() {
+        String version = "1.2.3-beta.1-1.ab-c+sha.0nsfgkjkjs-df";
+        Semver semver = new Semver(version);
+        assertIsSemver(semver, version, 1, 2, 3, new String[]{"beta", "1-1", "ab-c"}, "sha.0nsfgkjkjs-df");
+    }
 
     private static void assertIsSemver(Semver semver, String value, Integer major, Integer minor, Integer patch, String[] suffixTokens, String build) {
         assertEquals(value, semver.getValue());
@@ -145,6 +151,7 @@ public class SemverTest {
         assertFalse(new Semver("1.0.0-alpha.12").isGreaterThan("1.0.0-alpha.12"));
 
         assertFalse(new Semver("0.0.1").isGreaterThan("5.0.0"));
+        assertFalse(new Semver("1.0.0-alpha.12.ab-c").isGreaterThan("1.0.0-alpha.12.ab-c"));
     }
 
     @Test public void isLowerThan_test() {
@@ -168,6 +175,7 @@ public class SemverTest {
 
         assertFalse(new Semver("1.0.0").isLowerThan("1.0.0"));
         assertFalse(new Semver("1.0.0-alpha.12").isLowerThan("1.0.0-alpha.12"));
+        assertFalse(new Semver("1.0.0-alpha.12.x-yz").isLowerThan("1.0.0-alpha.12.x-yz"));
     }
 
     @Test public void isEquivalentTo_isEqualTo_and_build() {
@@ -208,6 +216,11 @@ public class SemverTest {
         Semver semver = new Semver("1.2.3-Beta.4+sha123456789");
         semver.withClearedBuild().isEqualTo("1.2.3-Beta.4");
     }
+    
+    @Test public void withClearedBuild_test_multiple_hyphen_signs() {
+        Semver semver = new Semver("1.2.3-Beta.4-test+sha12345-6789");
+        semver.withClearedBuild().isEqualTo("1.2.3-Beta.4-test");
+    }
 
     @Test public void withClearedSuffixAndBuild_test() {
         Semver semver = new Semver("1.2.3-Beta.4+SHA123456789");
@@ -238,6 +251,7 @@ public class SemverTest {
         assertEquals(Semver.VersionDiff.SUFFIX, sem.diff("1.2.3-alpha.4+sha32iddfu987"));
         assertEquals(Semver.VersionDiff.SUFFIX, sem.diff("1.2.3-beta.5+sha32iddfu987"));
         assertEquals(Semver.VersionDiff.BUILD, sem.diff("1.2.3-beta.4+sha32iddfu987"));
+        assertEquals(Semver.VersionDiff.BUILD, sem.diff("1.2.3-beta.4+sha899-d8g79f87"));
     }
 
     @Test public void compareTo_test() {
