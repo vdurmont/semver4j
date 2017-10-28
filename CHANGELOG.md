@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.1.0
+
+* Add support for hyphen signs in build and pre release section (thanks @KristianShishoev)
+* Fix a javadoc mistake (thanks @sschuberth)
+* Add method Semver#toStrict() to normalize to strict SemVer (thanks @rykov)
+
 ## v2.0.3
 
 * Make `Semver.toString` return the same thing as `Semver.getValue`
