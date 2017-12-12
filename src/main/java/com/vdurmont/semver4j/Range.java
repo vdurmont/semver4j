@@ -15,7 +15,7 @@ public class Range {
     }
 
     public boolean isSatisfiedBy(String version) {
-        return this.isSatisfiedBy(new Semver(version));
+        return this.isSatisfiedBy(new Semver(version, this.version.getType()));
     }
 
     public boolean isSatisfiedBy(Semver version) {

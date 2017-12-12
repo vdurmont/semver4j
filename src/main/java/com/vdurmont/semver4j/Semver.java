@@ -239,7 +239,7 @@ public class Semver implements Comparable<Semver> {
      * @see #isLowerThan(Semver)
      */
     public boolean isLowerThan(String version) {
-        return this.isLowerThan(new Semver(version));
+        return this.isLowerThan(new Semver(version, this.type));
     }
 
     /**
@@ -257,7 +257,7 @@ public class Semver implements Comparable<Semver> {
      * @see #isEquivalentTo(Semver)
      */
     public boolean isEquivalentTo(String version) {
-        return this.isEquivalentTo(new Semver(version));
+        return this.isEquivalentTo(new Semver(version, this.type));
     }
 
     /**
@@ -279,7 +279,7 @@ public class Semver implements Comparable<Semver> {
      * @see #isEqualTo(Semver)
      */
     public boolean isEqualTo(String version) {
-        return this.isEqualTo(new Semver(version));
+        return this.isEqualTo(new Semver(version, this.type));
     }
 
     /**
@@ -308,7 +308,7 @@ public class Semver implements Comparable<Semver> {
      * @see #diff(Semver)
      */
     public VersionDiff diff(String version) {
-        return this.diff(new Semver(version));
+        return this.diff(new Semver(version, this.type));
     }
 
     /**
