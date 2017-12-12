@@ -22,6 +22,12 @@ public class RequirementTest {
         assertIsRange(requirement, version, Range.RangeOperator.EQ);
     }
 
+    @Test public void buildLoose() {
+        String version = "0.27";
+        Requirement requirement = Requirement.buildLoose(version);
+        assertIsRange(requirement, version, Range.RangeOperator.EQ);
+    }
+
     @Test public void buildNPM_with_a_full_version() {
         String version = "1.2.3";
         Requirement requirement = Requirement.buildNPM(version);
