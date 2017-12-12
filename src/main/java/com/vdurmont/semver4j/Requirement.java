@@ -54,10 +54,14 @@ public class Requirement {
     }
 
     /**
-     * @see #buildStrict(Semver)
+     * Builds a requirement (will test that the version is equivalent to the requirement)
+     *
+     * @param requirement the version of the requirement
+     *
+     * @return the generated requirement
      */
-    public static Requirement buildStrict(String requirement) {
-        return buildStrict(new Semver(requirement));
+    public static Requirement build(Semver requirement) {
+        return new Requirement(new Range(requirement, Range.RangeOperator.EQ), null, null, null);
     }
 
     /**
@@ -67,15 +71,8 @@ public class Requirement {
      *
      * @return the generated requirement
      */
-    public static Requirement buildStrict(Semver requirement) {
-        return new Requirement(new Range(requirement, Range.RangeOperator.EQ), null, null, null);
-    }
-
-    /**
-     * @see #buildLoose(Semver)
-     */
-    public static Requirement buildLoose(String requirement) {
-        return buildLoose(new Semver(requirement, Semver.SemverType.LOOSE));
+    public static Requirement buildStrict(String requirement) {
+        return build(new Semver(requirement));
     }
 
     /**
@@ -85,8 +82,8 @@ public class Requirement {
      *
      * @return the generated requirement
      */
-    public static Requirement buildLoose(Semver requirement) {
-        return new Requirement(new Range(requirement, Range.RangeOperator.EQ), null, null, null);
+    public static Requirement buildLoose(String requirement) {
+        return build(new Semver(requirement, Semver.SemverType.LOOSE));
     }
 
     /**
