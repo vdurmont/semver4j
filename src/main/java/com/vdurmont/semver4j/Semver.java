@@ -29,7 +29,7 @@ public class Semver implements Comparable<Semver> {
         }
         this.value = value;
         String[] tokens;
-        
+
         if (hasPreRelease(value)) {
             tokens = value.split("-", 2);
         } else {
@@ -123,7 +123,7 @@ public class Semver implements Comparable<Semver> {
             throw new SemverException("Invalid version (no patch version): " + value);
         }
     }
-    
+
     private boolean hasPreRelease(String version) {
 
         int firstIndexOfPlus = value.indexOf("+");
