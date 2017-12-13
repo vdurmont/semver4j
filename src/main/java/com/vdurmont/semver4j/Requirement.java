@@ -72,7 +72,7 @@ public class Requirement {
      * @return the generated requirement
      */
     public static Requirement buildStrict(String requirement) {
-        return build(new Semver(requirement));
+        return build(new Semver(requirement, Semver.SemverType.STRICT));
     }
 
     /**
