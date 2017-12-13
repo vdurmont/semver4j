@@ -72,7 +72,7 @@ public class Requirement {
      * @return the generated requirement
      */
     public static Requirement buildStrict(String requirement) {
-        return build(new Semver(requirement));
+        return build(new Semver(requirement, Semver.SemverType.STRICT));
     }
 
     /**
@@ -213,9 +213,9 @@ public class Requirement {
      * groups of three tokens that are respectively of type [VERSION, HYPHEN, VERSION] and validates that the token
      * after the hyphen is a valid version string. If it isn't the, three tokens are merged into one (thus creating a
      * single version token, in which the third token is the build information).
-     * 
+     *
      * @param tokens the tokens contained in the requirement string
-     * 
+     *
      * @return the tokens with any false positive version ranges replaced with version strings
      */
     private static List<Token> removeFalsePositiveVersionRanges(List<Token> tokens) {
