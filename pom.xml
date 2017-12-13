@@ -61,6 +61,8 @@
                 <configuration>
                     <source>1.6</source>
                     <target>1.6</target>
+                    <testSource>1.6</testSource>
+                    <testTarget>1.6</testTarget>
                 </configuration>
             </plugin>
         </plugins>
@@ -79,7 +81,7 @@
                 <plugin>
                     <groupId>org.eluder.coveralls</groupId>
                     <artifactId>coveralls-maven-plugin</artifactId>
-                    <version>3.1.0</version>
+                    <version>3.2.1</version>
                 </plugin>
             </plugins>
         </pluginManagement>
