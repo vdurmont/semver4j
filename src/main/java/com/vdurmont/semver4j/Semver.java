@@ -239,7 +239,7 @@ public class Semver implements Comparable<Semver> {
      * @see #isGreaterThanOrEqualTo(Semver)
      */
     public boolean isGreaterThanOrEqualTo(String version) {
-        return this.isGreaterThanOrEqualTo(new Semver(version));
+        return this.isGreaterThanOrEqualTo(new Semver(version, this.type));
     }
 
     /**
@@ -275,7 +275,7 @@ public class Semver implements Comparable<Semver> {
      * @see #isLowerThanOrEqualTo(Semver)
      */
     public boolean isLowerThanOrEqualTo(String version) {
-        return this.isLowerThanOrEqualTo(new Semver(version));
+        return this.isLowerThanOrEqualTo(new Semver(version, this.type));
     }
 
     /**
