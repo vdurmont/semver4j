@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.2.0
+
+This is all @sschuberth huge thanks to him!
+* Requirement: Replace build* methods that take a Semver with a single one
+* Fix comparing loosely built requirements
+* Semver: Add isGreaterThanOrEqual() and isLowerThanOrEqual() methods
+* Set a testSource and testTarget in the Maven config
+* Fix coverage reporting to Coveralls
+
 ## 2.1.0
 
 * Add support for hyphen signs in build and pre release section (thanks @KristianShishoev)
