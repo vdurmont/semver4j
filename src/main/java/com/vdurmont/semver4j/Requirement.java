@@ -509,7 +509,11 @@ public class Requirement {
      * @see #isSatisfiedBy(Semver)
      */
     public boolean isSatisfiedBy(String version) {
-        return this.isSatisfiedBy(new Semver(version));
+        if (this.range != null) {
+            return this.isSatisfiedBy(new Semver(version, this.range.version.getType()));
+        } else {
+            return this.isSatisfiedBy(new Semver(version));
+        }
     }
 
     /**
