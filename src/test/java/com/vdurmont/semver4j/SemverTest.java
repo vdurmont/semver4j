@@ -139,6 +139,7 @@ public class SemverTest {
         assertTrue(new Semver("1.0.0-rc.1").isGreaterThan("1.0.0-beta.11"));
         assertTrue(new Semver("1.0.0").isGreaterThan("1.0.0-rc.1"));
 
+
         assertFalse(new Semver("1.0.0-alpha").isGreaterThan("1.0.0-alpha.1"));
         assertFalse(new Semver("1.0.0-alpha.1").isGreaterThan("1.0.0-alpha.beta"));
         assertFalse(new Semver("1.0.0-alpha.beta").isGreaterThan("1.0.0-beta"));
@@ -317,6 +318,13 @@ public class SemverTest {
         String version = "  1.2.3-BETA.11+sHa.0nSFGKjkjsdf  ";
         Semver semver = new Semver(version);
         assertEquals("1.2.3-BETA.11+sHa.0nSFGKjkjsdf", semver.getValue());
+    }
+
+    @Test
+    public void compareTo_with_buildNumber() {
+        Semver v3 = new Semver("1.24.1-rc3+903423.234");
+        Semver v4 = new Semver("1.24.1-rc3+903423.235");
+        assertEquals(0, v3.compareTo(v4));
     }
 
     @Test public void isStable_test() {
