@@ -283,6 +283,14 @@ public class RequirementTest {
         assertIsRange(Requirement.buildIvy("(,2.0["), "2.0.0", Range.RangeOperator.LT);
     }
 
+    @Test public void isSatisfiedBy_with_a_loose_type() {
+        Requirement req = Requirement.buildLoose("1.3.2");
+
+        assertFalse(req.isSatisfiedBy("0.27"));
+        assertTrue(req.isSatisfiedBy("1.3.2"));
+        assertFalse(req.isSatisfiedBy("1.5"));
+    }
+
     @Test public void isSatisfiedBy_with_a_complex_example() {
         Requirement req = Requirement.buildNPM("1.x || >=2.5.0 || 5.0.0 - 7.2.3");
 
