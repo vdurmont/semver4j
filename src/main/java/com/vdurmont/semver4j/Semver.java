@@ -491,8 +491,8 @@ public class Semver implements Comparable<Semver> {
 
     @Override public int compareTo(Semver version) {
         if (this.isGreaterThan(version)) return 1;
-        else if (this.equals(version)) return 0;
-        return -1;
+        else if(this.isLowerThan(version)) return -1;
+        return 0;
     }
 
     @Override public String toString() {
