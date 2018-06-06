@@ -1,12 +1,19 @@
 package com.vdurmont.semver4j;
 
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import com.vdurmont.semver4j.Semver.SemverType;
 import com.vdurmont.semver4j.Tokenizer.Token;
 import com.vdurmont.semver4j.Tokenizer.TokenType;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Stack;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * A requirement will provide an easy way to check if a version is satisfying.
@@ -586,15 +593,25 @@ public class Requirement {
 
     @Override public String toString() {
         if (this.range != null) {
-            return "Requirement{" + this.range + "}";
+            return this.range.toString();
         }
-        return "Requirement{" + this.req1 + " " + this.op + " " + this.req2 + "}";
+        return this.req1 + " " + (this.op == RequirementOperator.OR ? this.op.asString() + " " : "") + this.req2;
     }
 
     /**
      * The operators that can be used in a requirement.
      */
     protected enum RequirementOperator {
-        AND, OR
+        AND(""), OR("||");
+
+        private final String s;
+
+        RequirementOperator(String s) {
+            this.s = s;
+        }
+
+        public String asString() {
+            return s;
+        }
     }
 }

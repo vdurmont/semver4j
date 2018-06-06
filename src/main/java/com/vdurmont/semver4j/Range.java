@@ -36,33 +36,43 @@ public class Range {
     }
 
     @Override public String toString() {
-        return "(" + this.op + ", " + this.version + ")";
+        return this.op.asString() + this.version;
     }
 
     public enum RangeOperator {
         /**
          * The version and the requirement are equivalent
          */
-        EQ,
+        EQ("="),
 
         /**
          * The version is lower than the requirent
          */
-        LT,
+        LT("<"),
 
         /**
          * The version is lower than or equivalent to the requirement
          */
-        LTE,
+        LTE("<="),
 
         /**
          * The version is greater than the requirement
          */
-        GT,
+        GT(">"),
 
         /**
          * The version is greater than or equivalent to the requirement
          */
-        GTE
+        GTE(">=");
+
+        private final String s;
+
+        RangeOperator(String s) {
+            this.s = s;
+        }
+
+        public String asString() {
+            return s;
+        }
     }
 }

@@ -405,6 +405,34 @@ public class RequirementTest {
         assertTrue(req.range.version.isEquivalentTo("1.0.0"));
     }
 
+    @Test public void prettyString() {
+        assertEquals(">=0.0.0", Requirement.buildNPM("latest").toString());
+        assertEquals(">=0.0.0", Requirement.buildNPM("*").toString());
+        assertEquals(">=1.0.0 <2.0.0", Requirement.buildNPM("1.*").toString());
+        assertEquals(">=1.0.0 <2.0.0", Requirement.buildNPM("1.x").toString());
+        assertEquals("=1.0.0", Requirement.buildNPM("1.0.0").toString());
+        assertEquals("=1.0.0", Requirement.buildNPM("=1.0.0").toString());
+        assertEquals("=1.0.0", Requirement.buildNPM("v1.0.0").toString());
+        assertEquals("<1.0.0", Requirement.buildNPM("<1.0.0").toString());
+        assertEquals("<=1.0.0", Requirement.buildNPM("<=1.0.0").toString());
+        assertEquals(">1.0.0", Requirement.buildNPM(">1.0.0").toString());
+        assertEquals(">=1.0.0", Requirement.buildNPM(">=1.0.0").toString());
+        assertEquals(">=1.0.0 <1.1.0", Requirement.buildNPM("~1.0.0").toString());
+        assertEquals(">=1.0.0 <2.0.0", Requirement.buildNPM("^1.0.0").toString());
+        assertEquals(">=5.0.0 <=7.2.3 || >=1.0.0 <2.0.0 || >=2.5.0", Requirement.buildNPM("1.x || >=2.5.0 || 5.0.0 - 7.2.3").toString());
+
+        assertEquals(">=1.2.0 <1.3.0", Requirement.buildCocoapods("~>1.2.0").toString());
+
+        assertEquals(">=1.0.0 <=2.0.0", Requirement.buildIvy("[1.0,2.0]").toString());
+        assertEquals(">=1.0.0 <2.0.0", Requirement.buildIvy("[1.0,2.0[").toString());
+        assertEquals(">1.0.0 <=2.0.0", Requirement.buildIvy("]1.0,2.0]").toString());
+        assertEquals(">1.0.0 <2.0.0", Requirement.buildIvy("]1.0,2.0[").toString());
+        assertEquals(">=1.0.0", Requirement.buildIvy("[1.0,)").toString());
+        assertEquals(">1.0.0", Requirement.buildIvy("]1.0,)").toString());
+        assertEquals("<=2.0.0", Requirement.buildIvy("(,2.0]").toString());
+        assertEquals("<2.0.0", Requirement.buildIvy("(,2.0[").toString());
+    }
+
     private static void assertIsRange(Requirement requirement, String version, Range.RangeOperator operator) {
         assertNull(requirement.req1);
         assertNull(requirement.op);

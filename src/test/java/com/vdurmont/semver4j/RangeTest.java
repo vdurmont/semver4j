@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -60,5 +61,13 @@ public class RangeTest {
         assertTrue(range.isSatisfiedBy("1.2.3"));
         assertFalse(range.isSatisfiedBy("1.2.2"));
         assertTrue(range.isSatisfiedBy("1.2.4"));
+    }
+
+    @Test public void prettyString() {
+        assertEquals("=1.2.3", new Range("1.2.3", Range.RangeOperator.EQ).toString());
+        assertEquals("<1.2.3", new Range("1.2.3", Range.RangeOperator.LT).toString());
+        assertEquals("<=1.2.3", new Range("1.2.3", Range.RangeOperator.LTE).toString());
+        assertEquals(">1.2.3", new Range("1.2.3", Range.RangeOperator.GT).toString());
+        assertEquals(">=1.2.3", new Range("1.2.3", Range.RangeOperator.GTE).toString());
     }
 }
