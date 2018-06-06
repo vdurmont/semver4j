@@ -5,7 +5,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(JUnit4.class)
@@ -60,5 +62,23 @@ public class RangeTest {
         assertTrue(range.isSatisfiedBy("1.2.3"));
         assertFalse(range.isSatisfiedBy("1.2.2"));
         assertTrue(range.isSatisfiedBy("1.2.4"));
+    }
+
+    @Test public void testEquals() {
+        Range range = new Range("1.2.3", Range.RangeOperator.EQ);
+
+        assertEquals(range, range);
+        assertNotEquals(range, null);
+        assertNotEquals(range, "string");
+        assertNotEquals(range, new Range("1.2.3", Range.RangeOperator.GTE));
+        assertNotEquals(range, new Range("1.2.4", Range.RangeOperator.EQ));
+    }
+
+    @Test public void testHashCode() {
+        Range range = new Range("1.2.3", Range.RangeOperator.EQ);
+
+        assertEquals(range.hashCode(), range.hashCode());
+        assertNotEquals(range.hashCode(), new Range("1.2.3", Range.RangeOperator.GTE).hashCode());
+        assertNotEquals(range.hashCode(), new Range("1.2.4", Range.RangeOperator.EQ).hashCode());
     }
 }
