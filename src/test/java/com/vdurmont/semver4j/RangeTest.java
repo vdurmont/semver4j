@@ -64,6 +64,14 @@ public class RangeTest {
         assertTrue(range.isSatisfiedBy("1.2.4"));
     }
 
+    @Test public void prettyString() {
+        assertEquals("=1.2.3", new Range("1.2.3", Range.RangeOperator.EQ).toString());
+        assertEquals("<1.2.3", new Range("1.2.3", Range.RangeOperator.LT).toString());
+        assertEquals("<=1.2.3", new Range("1.2.3", Range.RangeOperator.LTE).toString());
+        assertEquals(">1.2.3", new Range("1.2.3", Range.RangeOperator.GT).toString());
+        assertEquals(">=1.2.3", new Range("1.2.3", Range.RangeOperator.GTE).toString());
+    }
+
     @Test public void testEquals() {
         Range range = new Range("1.2.3", Range.RangeOperator.EQ);
 
