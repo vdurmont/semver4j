@@ -1,5 +1,7 @@
 package com.vdurmont.semver4j;
 
+import java.util.Objects;
+
 // TODO doc
 public class Range {
     protected final Semver version;
@@ -33,6 +35,18 @@ public class Range {
         }
 
         throw new RuntimeException("Code error. Unknown RangeOperator: " + this.op); // Should never happen
+    }
+
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Range)) return false;
+        Range range = (Range) o;
+        return Objects.equals(version, range.version) &&
+                op == range.op;
+    }
+
+    @Override public int hashCode() {
+        return Objects.hash(version, op);
     }
 
     @Override public String toString() {

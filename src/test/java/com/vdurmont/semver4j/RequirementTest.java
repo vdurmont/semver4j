@@ -7,6 +7,7 @@ import org.junit.runners.JUnit4;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -431,6 +432,34 @@ public class RequirementTest {
         assertEquals(">1.0.0", Requirement.buildIvy("]1.0,)").toString());
         assertEquals("<=2.0.0", Requirement.buildIvy("(,2.0]").toString());
         assertEquals("<2.0.0", Requirement.buildIvy("(,2.0[").toString());
+    }
+
+    @Test public void testEquals() {
+        Requirement requirement = Requirement.buildStrict("1.2.3");
+
+        assertEquals(requirement, requirement);
+        assertEquals(requirement, Requirement.buildStrict("1.2.3"));
+        assertEquals(requirement, Requirement.buildLoose("1.2.3"));
+        assertEquals(requirement, Requirement.buildNPM("=1.2.3"));
+        assertEquals(requirement, Requirement.buildIvy("1.2.3"));
+        assertEquals(requirement, Requirement.buildCocoapods("1.2.3"));
+        assertNotEquals(requirement, null);
+        assertNotEquals(requirement, "string");
+        assertNotEquals(requirement, Requirement.buildStrict("1.2.4"));
+        assertNotEquals(requirement, Requirement.buildNPM(">1.2.3"));
+    }
+
+    @Test public void testHashCode() {
+        Requirement requirement = Requirement.buildStrict("1.2.3");
+
+        assertEquals(requirement.hashCode(), requirement.hashCode());
+        assertEquals(requirement.hashCode(), Requirement.buildStrict("1.2.3").hashCode());
+        assertEquals(requirement.hashCode(), Requirement.buildLoose("1.2.3").hashCode());
+        assertEquals(requirement.hashCode(), Requirement.buildNPM("=1.2.3").hashCode());
+        assertEquals(requirement.hashCode(), Requirement.buildIvy("1.2.3").hashCode());
+        assertEquals(requirement.hashCode(), Requirement.buildCocoapods("1.2.3").hashCode());
+        assertNotEquals(requirement.hashCode(), Requirement.buildStrict("1.2.4").hashCode());
+        assertNotEquals(requirement.hashCode(), Requirement.buildNPM(">1.2.3").hashCode());
     }
 
     private static void assertIsRange(Requirement requirement, String version, Range.RangeOperator operator) {

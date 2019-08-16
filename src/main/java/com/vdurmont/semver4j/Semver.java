@@ -428,6 +428,14 @@ public class Semver implements Comparable<Semver> {
     public Semver withClearedSuffixAndBuild() {
         return with(this.major, this.minor, this.patch, false, false);
     }
+    
+    public Semver withSuffix(String suffix) {
+    	return with(this.major, this.minor, this.patch, suffix.split("\\."), this.build);
+    }
+    
+    public Semver withBuild(String build) {
+    	return with(this.major, this.minor, this.patch, this.suffixTokens, build);
+    }
 
     public Semver nextMajor() {
         return with(this.major + 1, 0, 0, false, false);
@@ -447,6 +455,12 @@ public class Semver implements Comparable<Semver> {
         String buildStr = build ? this.build : null;
         String[] suffixTokens = suffix ? this.suffixTokens : null;
         return Semver.create(this.type, major, minor, patch, suffixTokens, buildStr);
+    }
+    
+    private Semver with(int major, Integer minor, Integer patch, String[] suffixTokens, String build) {
+        minor = this.minor != null ? minor : null;
+        patch = this.patch != null ? patch : null;
+        return Semver.create(this.type, major, minor, patch, suffixTokens, build);
     }
 
     private static Semver create(SemverType type, int major, Integer minor, Integer patch, String[] suffix, String build) {

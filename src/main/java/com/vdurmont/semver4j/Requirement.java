@@ -591,6 +591,20 @@ public class Requirement {
         return res;
     }
 
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Requirement)) return false;
+        Requirement that = (Requirement) o;
+        return Objects.equals(range, that.range) &&
+                Objects.equals(req1, that.req1) &&
+                op == that.op &&
+                Objects.equals(req2, that.req2);
+    }
+
+    @Override public int hashCode() {
+        return Objects.hash(range, req1, op, req2);
+    }
+
     @Override public String toString() {
         if (this.range != null) {
             return this.range.toString();
