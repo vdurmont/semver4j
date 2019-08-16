@@ -1,5 +1,14 @@
 # Changelog
 
+## 3.0.0
+
+- Drop java 6 support
+- Add `withSuffix()` and `withBuild()` fluent API (thanks @punkstarman)
+- Add pretty string representations for `Range` and `Requirement` (thanks @joschi)
+- Add `equals()` and `hashCode()` methods for `Range` and `Requirement` (thanks @joschi)
+- Exclude build number from comparison (thanks @astraia)
+- Fix `isSatisfiedBy` for loosely built requirements (thanks @sschuberth)
+
 ## 2.2.0
 
 This is all @sschuberth huge thanks to him!
