@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -226,6 +227,38 @@ public class SemverTest {
     @Test public void withClearedSuffixAndBuild_test() {
         Semver semver = new Semver("1.2.3-Beta.4+SHA123456789");
         semver.withClearedSuffixAndBuild().isEqualTo("1.2.3");
+    }
+    
+    @Test public void withSuffix_test_change_suffix() {
+    	Semver semver = new Semver("1.2.3-Alpha.4+SHA123456789");
+    	Semver result = semver.withSuffix("Beta.1");
+    	
+    	assertEquals("1.2.3-Beta.1+SHA123456789", result.toString());
+    	assertArrayEquals(new String[] { "Beta", "1" }, result.getSuffixTokens());
+    }
+    
+    @Test public void withSuffix_test_add_suffix() {
+    	Semver semver = new Semver("1.2.3+SHA123456789");
+    	Semver result = semver.withSuffix("Beta.1");
+    	
+    	assertEquals("1.2.3-Beta.1+SHA123456789", result.toString());
+    	assertArrayEquals(new String[] { "Beta", "1" }, result.getSuffixTokens());
+    }
+    
+    @Test public void withBuild_test_change_build() {
+    	Semver semver = new Semver("1.2.3-Alpha.4+SHA123456789");
+    	Semver result = semver.withBuild("SHA987654321");
+    	
+    	assertEquals("1.2.3-Alpha.4+SHA987654321", result.toString());
+    	assertEquals("SHA987654321", result.getBuild());
+    }
+    
+    @Test public void withBuild_test_add_build() {
+    	Semver semver = new Semver("1.2.3-Alpha.4");
+    	Semver result = semver.withBuild("SHA987654321");
+    	
+    	assertEquals("1.2.3-Alpha.4+SHA987654321", result.toString());
+    	assertEquals("SHA987654321", result.getBuild());
     }
 
     @Test public void nextMajor_test() {
