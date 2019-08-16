@@ -180,6 +180,10 @@ public class Semver implements Comparable<Semver> {
 
     /**
      * @see #isGreaterThan(Semver)
+     *
+     * @param version the version to compare
+     *
+     * @return true if the current version is greater than the provided version
      */
     public boolean isGreaterThan(String version) {
         return this.isGreaterThan(new Semver(version, this.getType()));
@@ -237,6 +241,10 @@ public class Semver implements Comparable<Semver> {
 
     /**
      * @see #isGreaterThanOrEqualTo(Semver)
+     *
+     * @param version the version to compare
+     *
+     * @return true if the current version is greater than or equal to the provided version
      */
     public boolean isGreaterThanOrEqualTo(String version) {
         return this.isGreaterThanOrEqualTo(new Semver(version, this.type));
@@ -255,6 +263,10 @@ public class Semver implements Comparable<Semver> {
 
     /**
      * @see #isLowerThan(Semver)
+     *
+     * @param version the version to compare
+     *
+     * @return true if the current version is lower than the provided version
      */
     public boolean isLowerThan(String version) {
         return this.isLowerThan(new Semver(version, this.type));
@@ -273,6 +285,10 @@ public class Semver implements Comparable<Semver> {
 
     /**
      * @see #isLowerThanOrEqualTo(Semver)
+     *
+     * @param version the version to compare
+     *
+     * @return true if the current version is lower than or equal to the provided version
      */
     public boolean isLowerThanOrEqualTo(String version) {
         return this.isLowerThanOrEqualTo(new Semver(version, this.type));
@@ -291,6 +307,10 @@ public class Semver implements Comparable<Semver> {
 
     /**
      * @see #isEquivalentTo(Semver)
+     *
+     * @param version the version to compare
+     *
+     * @return true if the current version equals the provided version (build excluded)
      */
     public boolean isEquivalentTo(String version) {
         return this.isEquivalentTo(new Semver(version, this.type));
@@ -313,6 +333,10 @@ public class Semver implements Comparable<Semver> {
 
     /**
      * @see #isEqualTo(Semver)
+     *
+     * @param version the version to compare
+     *
+     * @return true if the current version equals the provided version
      */
     public boolean isEqualTo(String version) {
         return this.isEqualTo(new Semver(version, this.type));
@@ -342,6 +366,10 @@ public class Semver implements Comparable<Semver> {
 
     /**
      * @see #diff(Semver)
+     *
+     * @param version the version to compare
+     *
+     * @return the greatest difference
      */
     public VersionDiff diff(String version) {
         return this.diff(new Semver(version, this.type));

@@ -52,6 +52,11 @@ public class Requirement {
      * Builds a requirement. (private use only)
      *
      * A requirement has to be a range or a combination of an operator and 2 other requirements.
+     *
+     * @param range the range that will be used for the requirement (optional if all other params are provided)
+     * @param req1 the requirement used as a left operand (requires the `op` and `req2` params to be provided)
+     * @param op the operator used between the requirements (requires the `req1` and `req2` params to be provided)
+     * @param req2 the requirement used as a right operand (requires the `req1` and `op` params to be provided)
      */
     protected Requirement(Range range, Requirement req1, RequirementOperator op, Requirement req2) {
         this.range = range;
@@ -385,6 +390,11 @@ public class Requirement {
 
     /**
      * Allows patch-level changes if a minor version is specified on the comparator. Allows minor-level changes if not.
+     *
+     * @param version the version of the requirement
+     * @param type the version system used for this requirement
+     *
+     * @return the generated requirement
      */
     protected static Requirement tildeRequirement(String version, Semver.SemverType type) {
         if (type != Semver.SemverType.NPM && type != Semver.SemverType.COCOAPODS) {
@@ -425,6 +435,11 @@ public class Requirement {
 
     /**
      * Allows changes that do not modify the left-most non-zero digit in the [major, minor, patch] tuple.
+     *
+     * @param version the version of the requirement
+     * @param type the version system used for this requirement
+     *
+     * @return the generated requirement
      */
     protected static Requirement caretRequirement(String version, Semver.SemverType type) {
         if (type != Semver.SemverType.NPM) {
@@ -456,6 +471,12 @@ public class Requirement {
 
     /**
      * Creates a requirement that satisfies "x1.y1.z1 - x2.y2.z2".
+     *
+     * @param lowerVersion the version of the lower bound of the requirement
+     * @param upperVersion the version of the upper bound of the requirement
+     * @param type the version system used for this requirement
+     *
+     * @return the generated requirement
      */
     protected static Requirement hyphenRequirement(String lowerVersion, String upperVersion, Semver.SemverType type) {
         if (type != Semver.SemverType.NPM) {
@@ -514,6 +535,10 @@ public class Requirement {
 
     /**
      * @see #isSatisfiedBy(Semver)
+     *
+     * @param version the version that will be checked
+     *
+     * @return true if the version satisfies the requirement
      */
     public boolean isSatisfiedBy(String version) {
         if (this.range != null) {
