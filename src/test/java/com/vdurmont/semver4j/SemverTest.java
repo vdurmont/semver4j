@@ -100,7 +100,7 @@ public class SemverTest {
         Semver semver = new Semver(version, Semver.SemverType.LOOSE);
         assertIsSemver(semver, version, 1, null, null, new String[]{"beta", "11"}, "sha.0nsfgkjkjsdf");
     }
-    
+
     @Test public void default_constructor_test_myltiple_hyphen_signs() {
         String version = "1.2.3-beta.1-1.ab-c+sha.0nsfgkjkjs-df";
         Semver semver = new Semver(version);
@@ -218,7 +218,7 @@ public class SemverTest {
         Semver semver = new Semver("1.2.3-Beta.4+sha123456789");
         semver.withClearedBuild().isEqualTo("1.2.3-Beta.4");
     }
-    
+
     @Test public void withClearedBuild_test_multiple_hyphen_signs() {
         Semver semver = new Semver("1.2.3-Beta.4-test+sha12345-6789");
         semver.withClearedBuild().isEqualTo("1.2.3-Beta.4-test");
@@ -228,35 +228,35 @@ public class SemverTest {
         Semver semver = new Semver("1.2.3-Beta.4+SHA123456789");
         semver.withClearedSuffixAndBuild().isEqualTo("1.2.3");
     }
-    
+
     @Test public void withSuffix_test_change_suffix() {
     	Semver semver = new Semver("1.2.3-Alpha.4+SHA123456789");
     	Semver result = semver.withSuffix("Beta.1");
-    	
+
     	assertEquals("1.2.3-Beta.1+SHA123456789", result.toString());
     	assertArrayEquals(new String[] { "Beta", "1" }, result.getSuffixTokens());
     }
-    
+
     @Test public void withSuffix_test_add_suffix() {
     	Semver semver = new Semver("1.2.3+SHA123456789");
     	Semver result = semver.withSuffix("Beta.1");
-    	
+
     	assertEquals("1.2.3-Beta.1+SHA123456789", result.toString());
     	assertArrayEquals(new String[] { "Beta", "1" }, result.getSuffixTokens());
     }
-    
+
     @Test public void withBuild_test_change_build() {
     	Semver semver = new Semver("1.2.3-Alpha.4+SHA123456789");
     	Semver result = semver.withBuild("SHA987654321");
-    	
+
     	assertEquals("1.2.3-Alpha.4+SHA987654321", result.toString());
     	assertEquals("SHA987654321", result.getBuild());
     }
-    
+
     @Test public void withBuild_test_add_build() {
     	Semver semver = new Semver("1.2.3-Alpha.4");
     	Semver result = semver.withBuild("SHA987654321");
-    	
+
     	assertEquals("1.2.3-Alpha.4+SHA987654321", result.toString());
     	assertEquals("SHA987654321", result.getBuild());
     }
