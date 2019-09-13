@@ -201,9 +201,13 @@ public class Semver implements Comparable<Semver> {
         if (this.getMajor() > version.getMajor()) return true;
         else if (this.getMajor() < version.getMajor()) return false;
 
+        if (this.type == SemverType.NPM && version.getMinor() == null) return false;
+
         int otherMinor = version.getMinor() != null ? version.getMinor() : 0;
         if (this.getMinor() != null && this.getMinor() > otherMinor) return true;
         else if (this.getMinor() != null && this.getMinor() < otherMinor) return false;
+
+        if (this.type == SemverType.NPM && version.getPatch() == null) return false;
 
         int otherPatch = version.getPatch() != null ? version.getPatch() : 0;
         if (this.getPatch() != null && this.getPatch() > otherPatch) return true;
@@ -350,6 +354,12 @@ public class Semver implements Comparable<Semver> {
      * @return true if the current version equals the provided version
      */
     public boolean isEqualTo(Semver version) {
+        if (this.type == SemverType.NPM) {
+            if (this.getMajor() != version.getMajor()) return false;
+            if (version.getMinor() == null) return true;
+            if (version.getPatch() == null) return true;
+        }
+
         return this.equals(version);
     }
 
@@ -456,11 +466,11 @@ public class Semver implements Comparable<Semver> {
     public Semver withClearedSuffixAndBuild() {
         return with(this.major, this.minor, this.patch, false, false);
     }
-    
+
     public Semver withSuffix(String suffix) {
     	return with(this.major, this.minor, this.patch, suffix.split("\\."), this.build);
     }
-    
+
     public Semver withBuild(String build) {
     	return with(this.major, this.minor, this.patch, this.suffixTokens, build);
     }
@@ -484,7 +494,7 @@ public class Semver implements Comparable<Semver> {
         String[] suffixTokens = suffix ? this.suffixTokens : null;
         return Semver.create(this.type, major, minor, patch, suffixTokens, buildStr);
     }
-    
+
     private Semver with(int major, Integer minor, Integer patch, String[] suffixTokens, String build) {
         minor = this.minor != null ? minor : null;
         patch = this.patch != null ? patch : null;
@@ -524,7 +534,6 @@ public class Semver implements Comparable<Semver> {
         if (!(o instanceof Semver)) return false;
         Semver version = (Semver) o;
         return value.equals(version.value);
-
     }
 
     @Override public int hashCode() {
