@@ -280,22 +280,24 @@ public class Requirement {
             Tokenizer.Token token = tokens.get(i);
             switch (token.type) {
                 case VERSION:
-                    queue.add(token);
+                    queue.push(token);
                     break;
                 case CLOSING:
                     while (stack.peek().type != Tokenizer.TokenType.OPENING) {
-                        queue.add(stack.pop());
+                        queue.push(stack.pop());
                     }
                     stack.pop();
                     if (stack.size() > 0 && stack.peek().type.isUnary()) {
-                        queue.add(stack.pop());
+                        queue.push(stack.pop());
                     }
                     break;
                 default:
                     if (token.type.isUnary()) {
-                        queue.push(token);
+                        // Push the operand first
                         i++;
                         queue.push(tokens.get(i));
+                        // Then the operator
+                        queue.push(token);
                     } else {
                         stack.push(token);
                     }
@@ -304,10 +306,9 @@ public class Requirement {
         }
 
         while (!stack.isEmpty()) {
-            queue.add(stack.pop());
+            queue.push(stack.pop());
         }
 
-        Collections.reverse(queue);
         return queue;
     }
 
@@ -366,8 +367,9 @@ public class Requirement {
                 Range range = new Range(token2.value, rangeOp);
                 return new Requirement(range, null, null, null);
             } else {
-                Requirement req1 = evaluateReversePolishNotation(iterator, type);
+                // They don't call it "reverse" for nothing
                 Requirement req2 = evaluateReversePolishNotation(iterator, type);
+                Requirement req1 = evaluateReversePolishNotation(iterator, type);
 
                 RequirementOperator requirementOp;
                 switch (token.type) {

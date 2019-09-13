@@ -65,6 +65,43 @@ public class RequirementTest {
         assertEquals("4.5.6", req2.range.version.getValue());
     }
 
+    @Test public void buildNPM_with_OR_and_AND_operators() {
+        Requirement req = Requirement.buildNPM(">1.2.1 <1.2.8 || >2.0.0 <3.0.0");
+
+        assertNull(req.range);
+        assertEquals(Requirement.RequirementOperator.OR, req.op);
+
+        // >1.2.1 <1.2.8
+        Requirement req1 = req.req1;
+        assertNull(req1.range);
+        assertEquals(Requirement.RequirementOperator.AND, req1.op);
+
+        Requirement req1_1 = req1.req1;
+        assertNull(req1_1.op);
+        assertEquals(Range.RangeOperator.GT, req1_1.range.op);
+        assertEquals("1.2.1", req1_1.range.version.getValue());
+
+        Requirement req1_2 = req1.req2;
+        assertNull(req1_2.op);
+        assertEquals(Range.RangeOperator.LT, req1_2.range.op);
+        assertEquals("1.2.8", req1_2.range.version.getValue());
+
+        // >2.0.0 < 3.0.0
+        Requirement req2 = req.req2;
+        assertNull(req2.range);
+        assertEquals(Requirement.RequirementOperator.AND, req2.op);
+
+        Requirement req2_1 = req2.req1;
+        assertNull(req2_1.op);
+        assertEquals(Range.RangeOperator.GT, req2_1.range.op);
+        assertEquals("2.0.0", req2_1.range.version.getValue());
+
+        Requirement req2_2 = req2.req2;
+        assertNull(req2_2.op);
+        assertEquals(Range.RangeOperator.LT, req2_2.range.op);
+        assertEquals("3.0.0", req2_2.range.version.getValue());
+    }
+
     @Test public void tildeRequirement_npm_full_version() {
         // ~1.2.3 := >=1.2.3 <1.(2+1).0 := >=1.2.3 <1.3.0
         tildeTest("1.2.3", "1.2.3", "1.3.0", Semver.SemverType.NPM);
@@ -420,7 +457,7 @@ public class RequirementTest {
         assertEquals(">=1.0.0", Requirement.buildNPM(">=1.0.0").toString());
         assertEquals(">=1.0.0 <1.1.0", Requirement.buildNPM("~1.0.0").toString());
         assertEquals(">=1.0.0 <2.0.0", Requirement.buildNPM("^1.0.0").toString());
-        assertEquals(">=5.0.0 <=7.2.3 || >=1.0.0 <2.0.0 || >=2.5.0", Requirement.buildNPM("1.x || >=2.5.0 || 5.0.0 - 7.2.3").toString());
+        assertEquals(">=1.0.0 <2.0.0 || >=2.5.0 || >=5.0.0 <=7.2.3", Requirement.buildNPM("1.x || >=2.5.0 || 5.0.0 - 7.2.3").toString());
 
         assertEquals(">=1.2.0 <1.3.0", Requirement.buildCocoapods("~>1.2.0").toString());
 
