@@ -19,14 +19,14 @@ Add the dependency to your project:
 <dependency>
   <groupId>com.vdurmont</groupId>
   <artifactId>semver4j</artifactId>
-  <version>3.0.0</version>
+  <version>3.1.0</version>
 </dependency>
 ```
 
 #### Using gradle
 
 ```xml
-compile 'com.vdurmont:semver4j:3.0.0'
+compile 'com.vdurmont:semver4j:3.1.0'
 ```
 
 ## Usage
@@ -34,11 +34,12 @@ compile 'com.vdurmont:semver4j:3.0.0'
 ### What is a version?
 
 In Semver4j, a version looks like: `1.2.3-beta.4+sha899d8g79f87`.
-* `1` is the major part (required)
-* `2` is the minor part (required in strict mode)
-* `3` is the patch part (required in strict mode)
-* `beta` and `4` are the version suffixes (optional)
-* `sha899d8g79f87` is the build information (optional)
+
+- `1` is the major part (required)
+- `2` is the minor part (required in strict mode)
+- `3` is the patch part (required in strict mode)
+- `beta` and `4` are the version suffixes (optional)
+- `sha899d8g79f87` is the build information (optional)
 
 ### The `Semver` object
 
@@ -52,20 +53,21 @@ Semver sem2 = new Semver("1.2.3-beta.4+sha899d8g79f87", SemverType.NPM); // Spec
 If the version is invalid, a `SemverException` will be thrown.  
 You can access the different parts of the version using `getMajor()`, `getMinor()`, `getPath()`, `getSuffixTokens()` or `getBuild()`.
 
-| Type | Mandatory | Optional |
-| --- | --- | --- |
-| STRICT | major, minor, patch | suffix, build |
-| LOOSE | major | minor, patch, suffix, build |
-| NPM | major | minor, patch, suffix, build |
-| COCOAPODS | major | minor, patch, suffix, build |
+| Type      | Mandatory           | Optional                    |
+| --------- | ------------------- | --------------------------- |
+| STRICT    | major, minor, patch | suffix, build               |
+| LOOSE     | major               | minor, patch, suffix, build |
+| NPM       | major               | minor, patch, suffix, build |
+| COCOAPODS | major               | minor, patch, suffix, build |
 
 ### Is the version stable?
 
 You can check if you're working with a stable version by using `Semver#isStable()`.
 
-A version is stable if its major number is *strictly* positive and it has no suffix.
+A version is stable if its major number is _strictly_ positive and it has no suffix.
 
 Examples:
+
 ```java
 // TRUE
 new Semver("1.2.3").isStable();
@@ -79,27 +81,34 @@ new Semver("1.2.3-BETA.11+sHa.0nSFGKjkjsdf").isStable();
 
 ### Comparing the versions
 
-* `isGreaterThan` returns true if the version is strictly greater than the other one.  
+- `isGreaterThan` returns true if the version is strictly greater than the other one.
+
 ```java
 Semver sem = new Semver("1.2.3");
 sem.isGreaterThan("1.2.2"); // true
 sem.isGreaterThan("1.2.4"); // false
 sem.isGreaterThan("1.2.3"); // false
 ```
-* `isLowerThan` returns true if the version is strictly lower than the other one.  
+
+- `isLowerThan` returns true if the version is strictly lower than the other one.
+
 ```java
 Semver sem = new Semver("1.2.3");
 sem.isLowerThan("1.2.2"); // false
 sem.isLowerThan("1.2.4"); // true
 sem.isLowerThan("1.2.3"); // false
 ```
-* `isEqualTo` returns true if the versions are exactly the same.  
+
+- `isEqualTo` returns true if the versions are exactly the same.
+
 ```java
 Semver sem = new Semver("1.2.3+sha123456789");
 sem.isEqualTo("1.2.3+sha123456789"); // true
 sem.isEqualTo("1.2.3+shaABCDEFGHI"); // false
 ```
-* `isEquivalentTo` returns true if the versions are the same (does not take the build information into account).
+
+- `isEquivalentTo` returns true if the versions are the same (does not take the build information into account).
+
 ```java
 Semver sem = new Semver("1.2.3+sha123456789");
 sem.isEquivalentTo("1.2.3+sha123456789"); // true
@@ -123,8 +132,9 @@ sem.diff("1.2.3-beta.4+sha32iddfu987"); // BUILD
 ### Requirements
 
 If you want to check if a version satisfies a requirement, use the `satisfies` method.
-* In `STRICT` and `LOOSE` modes, the requirement can only be another version.  
-* In `NPM` mode, the requirement follows [NPM versioning rules](https://github.com/npm/node-semver).
+
+- In `STRICT` and `LOOSE` modes, the requirement can only be another version.
+- In `NPM` mode, the requirement follows [NPM versioning rules](https://github.com/npm/node-semver).
 
 ```java
 // STRICT mode
@@ -158,16 +168,18 @@ semIVY.satisfies("[0.2,1.4]"); // true
 ### Modifying the version
 
 The `Semver` object is immutable. However, it provides a set of methods that will help you create new versions:
-* `withIncMajor()` and `withIncMajor(int increment)` returns a `Semver` object with the major part incremented
-* `withIncMinor()` and `withIncMinor(int increment)` returns a `Semver` object with the minor part incremented
-* `withIncPatch()` and `withIncPatch(int increment)` returns a `Semver` object with the patch part incremented
-* `withClearedSuffix()` returns a `Semver` object with no suffix
-* `withClearedBuild()` returns a `Semver` object with no build information
+
+- `withIncMajor()` and `withIncMajor(int increment)` returns a `Semver` object with the major part incremented
+- `withIncMinor()` and `withIncMinor(int increment)` returns a `Semver` object with the minor part incremented
+- `withIncPatch()` and `withIncPatch(int increment)` returns a `Semver` object with the patch part incremented
+- `withClearedSuffix()` returns a `Semver` object with no suffix
+- `withClearedBuild()` returns a `Semver` object with no build information
 
 You can also use built-in versioning methods such as:
-* `nextMajor()`: `1.2.3-beta.4+sha32iddfu987 => 2.0.0`
-* `nextMinor()`: `1.2.3-beta.4+sha32iddfu987 => 1.3.0`
-* `nextPatch()`: `1.2.3-beta.4+sha32iddfu987 => 1.2.4`
+
+- `nextMajor()`: `1.2.3-beta.4+sha32iddfu987 => 2.0.0`
+- `nextMinor()`: `1.2.3-beta.4+sha32iddfu987 => 1.3.0`
+- `nextPatch()`: `1.2.3-beta.4+sha32iddfu987 => 1.2.4`
 
 ## Contributing
 
