@@ -560,6 +560,10 @@ public class Requirement {
     public boolean isSatisfiedBy(Semver version) {
         if (this.range != null) {
             // We are on a leaf
+            if (version.isPreRelease() && !this.range.version.isPreRelease()) {
+                // Disqualify pre-releases if this is not a pre-release range
+                return false;
+            }
             return this.range.isSatisfiedBy(version);
         } else {
             // We have several sub-requirements

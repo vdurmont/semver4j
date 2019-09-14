@@ -179,6 +179,15 @@ public class Semver implements Comparable<Semver> {
     }
 
     /**
+     * Checks whether the version is a pre-release
+     *
+     * @return true if the current version is a prerelease
+     */
+    public boolean isPreRelease() {
+        return suffixTokens.length > 0;
+    }
+
+    /**
      * @see #isGreaterThan(Semver)
      *
      * @param version the version to compare
@@ -355,9 +364,15 @@ public class Semver implements Comparable<Semver> {
      */
     public boolean isEqualTo(Semver version) {
         if (this.type == SemverType.NPM) {
-            if (this.getMajor() != version.getMajor()) return false;
+            if (!this.areSameSuffixes(version.getSuffixTokens())) return false;
+
+            if (!Objects.equals(this.major, version.getMajor())) return false;
+
             if (version.getMinor() == null) return true;
+            if (!Objects.equals(this.minor, version.getMinor())) return false;
+
             if (version.getPatch() == null) return true;
+            if (!Objects.equals(this.patch, version.getPatch())) return false;
         }
 
         return this.equals(version);
@@ -542,7 +557,7 @@ public class Semver implements Comparable<Semver> {
 
     @Override public int compareTo(Semver version) {
         if (this.isGreaterThan(version)) return 1;
-        else if(this.isLowerThan(version)) return -1;
+        else if (this.isLowerThan(version)) return -1;
         return 0;
     }
 
