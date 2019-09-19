@@ -139,7 +139,9 @@ public class SemverTest {
         assertTrue(new Semver("1.0.0-beta.11").isGreaterThan("1.0.0-beta.2"));
         assertTrue(new Semver("1.0.0-rc.1").isGreaterThan("1.0.0-beta.11"));
         assertTrue(new Semver("1.0.0").isGreaterThan("1.0.0-rc.1"));
-
+        assertTrue(new Semver("1.0.0-rc11").isGreaterThan("1.0.0-rc3"));
+        assertTrue(new Semver("1.0.0-beta11").isGreaterThan("1.0.0-beta3"));
+        assertTrue(new Semver("1.0.0-rc.3.x-13").isGreaterThan("1.0.0-rc.3.x-3"));
 
         assertFalse(new Semver("1.0.0-alpha").isGreaterThan("1.0.0-alpha.1"));
         assertFalse(new Semver("1.0.0-alpha.1").isGreaterThan("1.0.0-alpha.beta"));
@@ -148,6 +150,7 @@ public class SemverTest {
         assertFalse(new Semver("1.0.0-beta.2").isGreaterThan("1.0.0-beta.11"));
         assertFalse(new Semver("1.0.0-beta.11").isGreaterThan("1.0.0-rc.1"));
         assertFalse(new Semver("1.0.0-rc.1").isGreaterThan("1.0.0"));
+        assertFalse(new Semver("1.0.0-beta11").isGreaterThan("1.0.0-rc3"));
 
         assertFalse(new Semver("1.0.0").isGreaterThan("1.0.0"));
         assertFalse(new Semver("1.0.0-alpha.12").isGreaterThan("1.0.0-alpha.12"));
@@ -174,7 +177,10 @@ public class SemverTest {
         assertTrue(new Semver("1.0.0-beta.2").isLowerThan("1.0.0-beta.11"));
         assertTrue(new Semver("1.0.0-beta.11").isLowerThan("1.0.0-rc.1"));
         assertTrue(new Semver("1.0.0-rc.1").isLowerThan("1.0.0"));
+        assertTrue(new Semver("1.0.0-rc3").isLowerThan("1.0.0-rc11"));
+        assertTrue(new Semver("1.0.0-rc.3.x-3").isLowerThan("1.0.0-rc.3.x-13"));
 
+        assertFalse(new Semver("1.0.0-rc3").isLowerThan("1.0.0-beta11"));
         assertFalse(new Semver("1.0.0").isLowerThan("1.0.0"));
         assertFalse(new Semver("1.0.0-alpha.12").isLowerThan("1.0.0-alpha.12"));
         assertFalse(new Semver("1.0.0-alpha.12.x-yz").isLowerThan("1.0.0-alpha.12.x-yz"));

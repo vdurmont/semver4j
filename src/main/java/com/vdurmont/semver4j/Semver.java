@@ -231,8 +231,28 @@ public class Semver implements Comparable<Semver> {
                 int t2 = Integer.valueOf(tokens2[i]);
                 cmp = t1 - t2;
             } catch (NumberFormatException e) {
-                // Else, do a string comparison
-                cmp = tokens1[i].compareToIgnoreCase(tokens2[i]);
+                // when tokens1 & tokens2 contains digits and share the same prefix words, compare the digits
+                // Exp - 1.0.0-rc11 > 1.0.0-rc3
+                if (tokens1[i].matches(".*\\d.*") && tokens2[i].matches(".*\\d.*")) {
+
+                    String[] tokenArr1 = tokens1[i].split("(?<=\\D)(?=\\d)");
+                    String[] tokenArr2 = tokens2[i].split("(?<=\\D)(?=\\d)");
+
+                    if (tokenArr1[0].equals(tokenArr2[0])) {
+                        // compare only digits part
+                        int digit1 = Integer.valueOf(tokenArr1[1]);
+                        int digit2 = Integer.valueOf(tokenArr2[1]);
+                        cmp = digit1 - digit2;
+
+                    } else {
+                        // Else, do a string comparison
+                        cmp = tokens1[i].compareToIgnoreCase(tokens2[i]);
+                    }
+
+                } else {
+                    // Else, do a string comparison
+                    cmp = tokens1[i].compareToIgnoreCase(tokens2[i]);
+                }
             }
             if (cmp < 0) return false;
             else if (cmp > 0) return true;
