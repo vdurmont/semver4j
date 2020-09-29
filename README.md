@@ -48,7 +48,7 @@ Semver sem2 = new Semver("1.2.3-beta.4+sha899d8g79f87", SemverType.NPM); // Spec
 ```
 
 If the version is invalid, a `SemverException` will be thrown.  
-You can access the different parts of the version using `getMajor()`, `getMinor()`, `getPath()`, `getSuffixTokens()` or `getBuild()`.
+You can access the different parts of the version using `getMajor()`, `getMinor()`, `getPatch()`, `getSuffixTokens()` or `getBuild()`.
 
 | Type      | Mandatory           | Optional                    |
 | --------- | ------------------- | --------------------------- |
