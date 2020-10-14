@@ -30,9 +30,12 @@ public class NpmSemverTest {
             // Fully-qualified versions:
             { "1.2.3", "1.2.3", true, },
             { "1.2.4", "1.2.3", false, },
+            { "1.3.3", "1.2.3", false, },
+            { "2.2.3", "1.2.3", false, },
 
             // Minor versions:
             { "1.2.3", "1.2", true, },
+            { "1.3.3", "1.2", false, },
             { "1.2.4", "1.3", false, },
 
             // Major versions:
@@ -47,7 +50,7 @@ public class NpmSemverTest {
             { "2.3.0-alpha", "1.2.3 - 2.3.0-beta", true, },
             { "2.3.4", "1.2.3 - 2.3", true, },
             { "2.3.4", "1.2.3 - 2", true, },
-            { "4.4", "3.X - 4.X", true, },
+            { "4.4.0", "3.X - 4.X", true, },
             { "1.0.0", "1.2.3 - 2.3.4", false, },
             { "3.0.0", "1.2.3 - 2.3.4", false, },
             { "2.4.3", "1.2.3 - 2.3", false, },
@@ -58,7 +61,7 @@ public class NpmSemverTest {
             { "3.1.5", "", true, },
             { "3.1.5", "*", true, },
             { "0.0.0", "*", true, },
-            { "1.0.0-beta", "*", true, },
+            { "1.0.0-beta", "*", false, },
             { "3.1.5-beta", "3.1.x", false, },
             { "3.1.5-beta+exp.sha.5114f85", "3.1.x", false, },
             { "3.1.5+exp.sha.5114f85", "3.1.x", true, },
@@ -121,6 +124,8 @@ public class NpmSemverTest {
             { "2.0.1", "=2.0", true, },
             { "2.0.0", "=2", true, },
             { "2.0.1", "=2", true, },
+            { "3.0.0", "=2.0", false, },
+            { "2.1.0", "=2.0", false, },
             { "2.0.1", "=2.0.0", false, },
             { "1.9.9", "=2.0.0", false, },
             { "1.9.9", "=2.0", false, },
@@ -176,6 +181,56 @@ public class NpmSemverTest {
             { "3.0.0", "<=2.0", false, },
             { "3.0.0", "<=2", false, },
 
+            // Prerelease versions:
+            { "2.0.0-alpha", "=2.0.0-beta", false, },
+            { "2.0.0-rc.2", "=2.0.0-rc.2", true, },
+            { "2.0.0-rc.2", "=2.0.0-rc.3", false, },
+            { "2.0.0-rc.2", "=2.0.0-rc.2.3", false, },
+            { "2.0.0-rc.2", "=2.0.0-rc.3.2", false, },
+            { "2.0.0-rc.2", "=2.0.0", false, },
+            { "2.0.0-rc.2", "=2.0", false, },
+            { "2.0.0-rc.2", "=2", false, },
+
+            { "2.0.0-alpha", ">2.0.0-beta", false, },
+            { "2.0.0-rc.2", ">2.0.0-rc.1", true, },
+            { "2.0.0-rc.2", ">2.0.0-rc.2", false, },
+            { "2.0.0-rc.2", ">2.0.0-rc.3", false, },
+            { "2.0.0-rc.2", ">2.0.0-rc.2.3", false, },
+            { "2.0.0-rc.2", ">2.0.0-rc.3.2", false, },
+            { "2.0.0-rc.2", ">2.0.0", false, },
+            { "2.0.0-rc.2", ">2.0", false, },
+            { "2.0.0-rc.2", ">2", false, },
+
+            { "2.0.0-alpha", "<2.0.0-beta", true, },
+            { "2.0.0-rc.2", "<2.0.0-rc.3", true, },
+            { "2.0.0-rc.2", "<2.0.0-rc.2.3", true, },
+            { "2.0.0-rc.2", "<2.0.0-rc.3.2", true, },
+            { "2.0.0-rc.2", "<2.0.0-rc.1", false, },
+            { "2.0.0-rc.2", "<2.0.0-rc.2", false, },
+            { "2.0.0-rc.2", "<2.0.0", false, },
+            { "2.0.0-rc.2", "<2.0", false, },
+            { "2.0.0-rc.2", "<2", false, },
+
+            { "2.0.0-alpha", ">=2.0.0-beta", false, },
+            { "2.0.0-rc.2", ">=2.0.0-rc.1", true, },
+            { "2.0.0-rc.2", ">=2.0.0-rc.2", true, },
+            { "2.0.0-rc.2", ">=2.0.0-rc.3", false, },
+            { "2.0.0-rc.2", ">=2.0.0-rc.2.3", false, },
+            { "2.0.0-rc.2", ">=2.0.0-rc.3.2", false, },
+            { "2.0.0-rc.2", ">=2.0.0", false, },
+            { "2.0.0-rc.2", ">=2.0", false, },
+            { "2.0.0-rc.2", ">=2", false, },
+
+            { "2.0.0-alpha", "<=2.0.0-beta", true, },
+            { "2.0.0-rc.2", "<=2.0.0-rc.2", true, },
+            { "2.0.0-rc.2", "<=2.0.0-rc.3", true, },
+            { "2.0.0-rc.2", "<=2.0.0-rc.2.3", true, },
+            { "2.0.0-rc.2", "<=2.0.0-rc.3.2", true, },
+            { "2.0.0-rc.2", "<=2.0.0-rc.1", false, },
+            { "2.0.0-rc.2", "<=2.0.0", false, },
+            { "2.0.0-rc.2", "<=2.0", false, },
+            { "2.0.0-rc.2", "<=2", false, },
+
             // AND ranges:
             { "2.0.1", ">2.0.0 <3.0.0", true, },
             { "2.0.1", ">2.0 <3.0", false, },
@@ -222,12 +277,22 @@ public class NpmSemverTest {
             { "1.1.0", "1.2 <1.2.8 || >2.0.0", false, },
             { "1.2.9", "1.2 <1.2.8 || >2.0.0", false, },
             { "2.0.0", "1.2 <1.2.8 || >2.0.0", false, },
+
+            // Big number equality:
+            { "128.0.0", "=128.0.0", true, },
+            { "127.127.127", "=127.128", false, },
+            { "0.128.0", "=0.128.0", true, },
+            { "0.0.128", "=0.0.128", true, },
+            { "127.127.127", "=127.127.127", true, },
+            { "128.128.128", "=128.128.128", true, },
+            { "999.999.999", "=999.999.999", true, },
+            { "9999.9999.9999", "=9999.9999.9999", true, },
         });
     }
 
     @Test
     public void test() {
-        assertEquals(this.version + " , " + this.rangeExpression ,this.expected, new Semver(this.version, SemverType.NPM).satisfies(this.rangeExpression));
+        assertEquals(this.version + " , " + this.rangeExpression, this.expected, new Semver(this.version, SemverType.NPM).satisfies(this.rangeExpression));
     }
 
 }
