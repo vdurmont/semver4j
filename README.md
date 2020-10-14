@@ -47,7 +47,7 @@ Semver sem1 = new Semver("1.2.3-beta.4+sha899d8g79f87"); // Defaults to STRICT m
 Semver sem2 = new Semver("1.2.3-beta.4+sha899d8g79f87", SemverType.NPM); // Specify the mode
 ```
 
-If the version is invalid, a `SemverException` will be thrown.  
+If the version is invalid, a `SemverException` will be thrown.
 You can access the different parts of the version using `getMajor()`, `getMinor()`, `getPatch()`, `getSuffixTokens()` or `getBuild()`.
 
 | Type      | Mandatory           | Optional                    |
@@ -130,6 +130,7 @@ sem.diff("1.2.3-beta.4+sha32iddfu987"); // BUILD
 
 If you want to check if a version satisfies a requirement, use the `satisfies` method.
 
+- A `SemverException` is thrown if the version is not fully-qualified (containing major, minor, and patch versions).
 - In `STRICT` and `LOOSE` modes, the requirement can only be another version.
 - In `NPM` mode, the requirement follows [NPM versioning rules](https://github.com/npm/node-semver).
 
@@ -180,5 +181,5 @@ You can also use built-in versioning methods such as:
 
 ## Contributing
 
-Any pull request or bug report is welcome!  
+Any pull request or bug report is welcome!
 If you have any suggestion about new features, you can open an issue.
