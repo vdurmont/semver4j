@@ -571,6 +571,12 @@ public class Requirement {
      * @return true if the version satisfies the requirement
      */
     public boolean isSatisfiedBy(Semver version) {
+        if (version.getMinor() == null) {
+            throw new SemverException("Invalid version for requirement check (no minor version): " + version.getValue());
+        } else if (version.getPatch() == null) {
+            throw new SemverException("Invalid version for requirement check (no patch version): " + version.getValue());
+        }
+
         if (this.range != null) {
             // We are on a leaf
             if (version.isPreRelease() && !this.range.version.isPreRelease()) {

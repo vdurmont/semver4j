@@ -13,6 +13,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -117,6 +118,15 @@ public class SemverTest {
             assertEquals(suffixTokens[i], semver.getSuffixTokens()[i]);
         }
         assertEquals(build, semver.getBuild());
+    }
+
+    @Test public void satisfies_unqualified_exception() {
+        String version = "1.0";
+        Semver semver = new Semver(version, Semver.SemverType.LOOSE);
+        try {
+            semver.satisfies("1.0");
+            fail("satisfies() did not throw as expected.");
+        } catch (SemverException e) {}
     }
 
     @Test public void statisfies_works_will_all_the_types() {

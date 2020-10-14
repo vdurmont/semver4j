@@ -10,6 +10,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -324,9 +325,9 @@ public class RequirementTest {
     @Test public void isSatisfiedBy_with_a_loose_type() {
         Requirement req = Requirement.buildLoose("1.3.2");
 
-        assertFalse(req.isSatisfiedBy("0.27"));
+        assertFalse(req.isSatisfiedBy("0.27.0"));
         assertTrue(req.isSatisfiedBy("1.3.2"));
-        assertFalse(req.isSatisfiedBy("1.5"));
+        assertFalse(req.isSatisfiedBy("1.5.0"));
     }
 
     @Test public void isSatisfiedBy_with_a_complex_example() {
@@ -415,37 +416,19 @@ public class RequirementTest {
         assertTrue(req.isSatisfiedBy("0.2.3"));
     }
 
-    @Test public void isSatisfiedBy_not_fully_qualified() {
-        Requirement req = Requirement.buildNPM("=1.2.0");
-        assertFalse(req.isSatisfiedBy("1"));
-        assertFalse(req.isSatisfiedBy("1.2"));
-        assertTrue(req.isSatisfiedBy("1.2.0"));
-
-        Requirement req2 = Requirement.buildNPM("1.2.0");
-        assertFalse(req2.isSatisfiedBy("1"));
-        assertFalse(req2.isSatisfiedBy("1.2"));
-        assertTrue(req2.isSatisfiedBy("1.2.0"));
-    }
-
-    @Test public void isSatisfiedBy_without_patch() {
-        Requirement req = Requirement.buildNPM("=1.2");
-        assertFalse(req.isSatisfiedBy("1"));
-        assertTrue(req.isSatisfiedBy("1.2"));
-        assertTrue(req.isSatisfiedBy("1.2.0"));
-    }
-
-    @Test public void isSatisfiedBy_without_minor_and_patch() {
-        Requirement req = Requirement.buildNPM("=1");
-        assertTrue(req.isSatisfiedBy("1"));
-        assertTrue(req.isSatisfiedBy("1.2"));
-        assertTrue(req.isSatisfiedBy("1.2.0"));
-    }
-
     @Test public void isSatisfiedBy_with_latest() {
         Requirement req = Requirement.buildNPM("latest");
         assertTrue(req.isSatisfiedBy("1.2.3"));
         assertTrue(req.isSatisfiedBy("2.5.2"));
         assertTrue(req.isSatisfiedBy("0.2.3"));
+    }
+
+    @Test public void isSatisfiedBy_unqualified_exception() {
+        Requirement req = Requirement.buildNPM("1.0");
+        try {
+            req.isSatisfiedBy("1.0");
+            fail("isSatisfiedBy() did not throw as expected.");
+        } catch (SemverException e) {}
     }
 
     @Test public void tildeRequirement_cocoapods() {

@@ -50,7 +50,7 @@ public class NpmSemverTest {
             { "2.3.0-alpha", "1.2.3 - 2.3.0-beta", true, },
             { "2.3.4", "1.2.3 - 2.3", true, },
             { "2.3.4", "1.2.3 - 2", true, },
-            { "4.4", "3.X - 4.X", true, },
+            { "4.4.0", "3.X - 4.X", true, },
             { "1.0.0", "1.2.3 - 2.3.4", false, },
             { "3.0.0", "1.2.3 - 2.3.4", false, },
             { "2.4.3", "1.2.3 - 2.3", false, },
@@ -292,7 +292,7 @@ public class NpmSemverTest {
 
     @Test
     public void test() {
-        assertEquals(this.version + " , " + this.rangeExpression ,this.expected, new Semver(this.version, SemverType.NPM).satisfies(this.rangeExpression));
+        assertEquals(this.version + " , " + this.rangeExpression, this.expected, new Semver(this.version, SemverType.NPM).satisfies(this.rangeExpression));
     }
 
 }
