@@ -338,8 +338,22 @@ public class Semver implements Comparable<Semver> {
      */
     public boolean isEquivalentTo(Semver version) {
         // Get versions without build
-        Semver sem1 = this.getBuild() == null ? this : new Semver(this.getValue().replace("+" + this.getBuild(), ""));
-        Semver sem2 = version.getBuild() == null ? version : new Semver(version.getValue().replace("+" + version.getBuild(), ""));
+        Semver sem1 = this.getBuild() == null ? this : new Semver(this.getValue().replace("+" + this.getBuild(), ""), this.getType());
+        Semver sem2 = version.getBuild() == null ? version : new Semver(version.getValue().replace("+" + version.getBuild(), ""), version.getType());
+
+        // Ignore minor and/or patch when versions are not equally qualified
+        if (sem1.getType() != SemverType.STRICT) {
+            if (!sem1.areSameSuffixes(sem2.getSuffixTokens())) return false;
+
+            if (!Objects.equals(sem1.getMajor(), sem2.getMajor())) return false;
+
+            if (sem2.getMinor() == null) return true;
+            if (!Objects.equals(sem1.getMinor(), sem2.getMinor())) return false;
+
+            if (sem2.getPatch() == null) return true;
+            if (!Objects.equals(sem1.getPatch(), sem2.getPatch())) return false;
+        }
+
         // Compare those new versions
         return sem1.isEqualTo(sem2);
     }
@@ -363,18 +377,6 @@ public class Semver implements Comparable<Semver> {
      * @return true if the current version equals the provided version
      */
     public boolean isEqualTo(Semver version) {
-        if (this.type == SemverType.NPM) {
-            if (!this.areSameSuffixes(version.getSuffixTokens())) return false;
-
-            if (!Objects.equals(this.major, version.getMajor())) return false;
-
-            if (version.getMinor() == null) return true;
-            if (!Objects.equals(this.minor, version.getMinor())) return false;
-
-            if (version.getPatch() == null) return true;
-            if (!Objects.equals(this.patch, version.getPatch())) return false;
-        }
-
         return this.equals(version);
     }
 

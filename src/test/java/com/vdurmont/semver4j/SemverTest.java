@@ -187,6 +187,27 @@ public class SemverTest {
         assertTrue(semver.isEquivalentTo(version2));
     }
 
+    @Test public void isEquivalentTo_isEqualTo_without_patch() {
+        Semver semver = new Semver("1.2.3", Semver.SemverType.NPM);
+        String version2 = "1.2";
+        assertFalse(semver.isEqualTo(version2));
+        assertTrue(semver.isEquivalentTo(version2));
+    }
+
+    @Test public void isEqualTo_symmetric() {
+        Semver semver1 = new Semver("1.2.3", Semver.SemverType.NPM);
+        Semver semver2 = new Semver("1.2", Semver.SemverType.NPM);
+        assertFalse(semver1.isEqualTo(semver2));
+        assertFalse(semver2.isEqualTo(semver1));
+    }
+
+    @Test public void isEquivalentTo_asymmetric() {
+        Semver semver1 = new Semver("1.2.3", Semver.SemverType.NPM);
+        Semver semver2 = new Semver("1.2", Semver.SemverType.NPM);
+        assertTrue(semver1.isEquivalentTo(semver2));
+        assertFalse(semver2.isEquivalentTo(semver1));
+    }
+
     @Test public void statisfies_calls_the_requirement() {
         Requirement req = mock(Requirement.class);
         Semver semver = new Semver("1.2.2");

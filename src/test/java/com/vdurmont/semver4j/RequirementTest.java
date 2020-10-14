@@ -415,6 +415,32 @@ public class RequirementTest {
         assertTrue(req.isSatisfiedBy("0.2.3"));
     }
 
+    @Test public void isSatisfiedBy_not_fully_qualified() {
+        Requirement req = Requirement.buildNPM("=1.2.0");
+        assertFalse(req.isSatisfiedBy("1"));
+        assertFalse(req.isSatisfiedBy("1.2"));
+        assertTrue(req.isSatisfiedBy("1.2.0"));
+
+        Requirement req2 = Requirement.buildNPM("1.2.0");
+        assertFalse(req2.isSatisfiedBy("1"));
+        assertFalse(req2.isSatisfiedBy("1.2"));
+        assertTrue(req2.isSatisfiedBy("1.2.0"));
+    }
+
+    @Test public void isSatisfiedBy_without_patch() {
+        Requirement req = Requirement.buildNPM("=1.2");
+        assertFalse(req.isSatisfiedBy("1"));
+        assertTrue(req.isSatisfiedBy("1.2"));
+        assertTrue(req.isSatisfiedBy("1.2.0"));
+    }
+
+    @Test public void isSatisfiedBy_without_minor_and_patch() {
+        Requirement req = Requirement.buildNPM("=1");
+        assertTrue(req.isSatisfiedBy("1"));
+        assertTrue(req.isSatisfiedBy("1.2"));
+        assertTrue(req.isSatisfiedBy("1.2.0"));
+    }
+
     @Test public void isSatisfiedBy_with_latest() {
         Requirement req = Requirement.buildNPM("latest");
         assertTrue(req.isSatisfiedBy("1.2.3"));
