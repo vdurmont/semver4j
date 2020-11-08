@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.org/vdurmont/semver4j.svg?branch=master)](https://travis-ci.org/vdurmont/semver4j)
 [![Coverage Status](https://coveralls.io/repos/vdurmont/semver4j/badge.svg?branch=master&service=github)](https://coveralls.io/github/vdurmont/semver4j?branch=master)
 [![License Info](http://img.shields.io/badge/license-The%20MIT%20License-brightgreen.svg)](https://github.com/vdurmont/semver4j/blob/master/LICENSE.md)
+[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fvdurmont%2Fsemver4j&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=PAGE+VIEWS&edge_flat=false)](https://hits.seeyoufarm.com)
 
 **Semver4j** is a lightweight Java library that helps you handling versions. It follows the rules of the [semantic versioning](http://semver.org) specification and provides several versioning modes: strict, NPM, CocoaPods...
 
