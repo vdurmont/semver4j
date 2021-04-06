@@ -322,7 +322,8 @@ public class Requirement {
             if (token.type == Tokenizer.TokenType.VERSION) {
                 if ("*".equals(token.value) || (type == Semver.SemverType.NPM && "latest".equals(token.value))) {
                     // Special case for "*" and "latest" in NPM
-                    return new Requirement(new Range("0.0.0", Range.RangeOperator.GTE), null, null, null);
+                    Range range = new Range(new Semver("0.0.0", type), Range.RangeOperator.GTE);
+                    return new Requirement(range, null, null, null);
                 }
                 Semver version = new Semver(token.value, type);
                 if (version.getMinor() != null && version.getPatch() != null) {
@@ -364,7 +365,8 @@ public class Requirement {
                         throw new SemverException("Invalid requirement");
                 }
 
-                Range range = new Range(token2.value, rangeOp);
+                Semver version = new Semver(token2.value, type);
+                Range range = new Range(version, rangeOp);
                 return new Requirement(range, null, null, null);
             } else {
                 // They don't call it "reverse" for nothing
@@ -536,6 +538,21 @@ public class Requirement {
     }
 
     /**
+     * @return Semver type
+     */
+    public Semver.SemverType getType() {
+        if (this.range != null) {
+            return this.range.version.getType();
+        } else if (this.req1 != null) {
+            return this.req1.getType();
+        } else if (this.req2 != null) {
+            return this.req2.getType();
+        } else {
+            return Semver.SemverType.STRICT;
+        }
+    }
+
+    /**
      * @see #isSatisfiedBy(Semver)
      *
      * @param version the version that will be checked
@@ -543,11 +560,7 @@ public class Requirement {
      * @return true if the version satisfies the requirement
      */
     public boolean isSatisfiedBy(String version) {
-        if (this.range != null) {
-            return this.isSatisfiedBy(new Semver(version, this.range.version.getType()));
-        } else {
-            return this.isSatisfiedBy(new Semver(version));
-        }
+        return this.isSatisfiedBy(new Semver(version, this.getType()));
     }
 
     /**
@@ -558,8 +571,18 @@ public class Requirement {
      * @return true if the version satisfies the requirement
      */
     public boolean isSatisfiedBy(Semver version) {
+        if (version.getMinor() == null) {
+            throw new SemverException("Invalid version for requirement check (no minor version): " + version.getValue());
+        } else if (version.getPatch() == null) {
+            throw new SemverException("Invalid version for requirement check (no patch version): " + version.getValue());
+        }
+
         if (this.range != null) {
             // We are on a leaf
+            if (version.isPreRelease() && !this.range.version.isPreRelease()) {
+                // Disqualify pre-releases if this is not a pre-release range
+                return false;
+            }
             return this.range.isSatisfiedBy(version);
         } else {
             // We have several sub-requirements
