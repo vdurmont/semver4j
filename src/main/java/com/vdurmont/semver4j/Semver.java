@@ -1,5 +1,6 @@
 package com.vdurmont.semver4j;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -441,6 +442,24 @@ public class Semver implements Comparable<Semver> {
 
     public Semver withIncPatch(int increment) {
         return this.withInc(0, 0, increment);
+    }
+    
+    public Semver withIncSuffix(int index) {
+    	return withIncSuffix(index, 1);
+    }
+
+    public Semver withIncSuffix(int index, int increment) {
+    	if(suffixTokens.length <= index) throw new SemverException("No suffix at index "+index);
+    	try {
+    		Integer token = Integer.valueOf(suffixTokens[index]);
+    		token+=increment;
+    		String[] newSuffix = Arrays.copyOf(suffixTokens,suffixTokens.length);
+    		newSuffix[index] = token.toString();
+    		return with(major,minor,patch,newSuffix,build);
+    	}
+    	catch(NumberFormatException nfe) {
+    		throw new SemverException("Suffix was not integer at index "+index);
+    	}
     }
 
     private Semver withInc(int majorInc, int minorInc, int patchInc) {

@@ -275,6 +275,40 @@ public class SemverTest {
         Semver semver = new Semver("1.2.3-beta.4+sha123456789");
         semver.nextPatch().isEqualTo("1.2.4");
     }
+    
+    @Test public void withIncSuffix_test() {
+    	Semver semver = new Semver("1.2.3-Draft.1");
+    	Semver result = semver.withIncSuffix(1);
+    	assertEquals("1.2.3-Draft.2", result.toString());
+    }
+    
+    @Test public void withIncSuffix_test_reverse() {
+    	Semver semver = new Semver("1.2.3-1.draft.2");
+    	Semver result = semver.withIncSuffix(0);
+    	assertEquals("1.2.3-2.draft.2", result.toString());
+    }
+    
+    @Test public void withIncSuffix_test_multiple() {
+    	Semver semver = new Semver("1.2.3-1.2");
+    	Semver result = semver.withIncSuffix(1).withIncSuffix(0);
+    	assertEquals("1.2.3-2.3", result.toString());
+    }
+    
+    @Test public void withIncSuffix_test_increment() {
+    	Semver semver = new Semver("1.2.3-draft.1");
+    	Semver result = semver.withIncSuffix(1,3);
+    	assertEquals("1.2.3-draft.4", result.toString());
+    }
+    
+    @Test(expected = SemverException.class) public void withIncSuffix_test_indexerror() {
+    	Semver semver = new Semver("1.2.3-Draft.1");
+    	semver.withIncSuffix(2);
+    }
+    
+    @Test(expected = SemverException.class) public void withIncSuffix_test_formaterror() {
+    	Semver semver = new Semver("1.2.3-Draft.B");
+    	semver.withIncSuffix(1);
+    }
 
     @Test public void toStrict_test() {
         String[][] versionGroups = new String[][]{
