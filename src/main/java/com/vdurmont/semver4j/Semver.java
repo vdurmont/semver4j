@@ -1,5 +1,6 @@
 package com.vdurmont.semver4j;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -179,6 +180,15 @@ public class Semver implements Comparable<Semver> {
     }
 
     /**
+     * Checks whether the version is a pre-release
+     *
+     * @return true if the current version is a prerelease
+     */
+    public boolean isPreRelease() {
+        return suffixTokens.length > 0;
+    }
+
+    /**
      * @see #isGreaterThan(Semver)
      *
      * @param version the version to compare
@@ -329,8 +339,22 @@ public class Semver implements Comparable<Semver> {
      */
     public boolean isEquivalentTo(Semver version) {
         // Get versions without build
-        Semver sem1 = this.getBuild() == null ? this : new Semver(this.getValue().replace("+" + this.getBuild(), ""));
-        Semver sem2 = version.getBuild() == null ? version : new Semver(version.getValue().replace("+" + version.getBuild(), ""));
+        Semver sem1 = this.getBuild() == null ? this : new Semver(this.getValue().replace("+" + this.getBuild(), ""), this.getType());
+        Semver sem2 = version.getBuild() == null ? version : new Semver(version.getValue().replace("+" + version.getBuild(), ""), version.getType());
+
+        // Ignore minor and/or patch when versions are not equally qualified
+        if (sem1.getType() != SemverType.STRICT) {
+            if (!sem1.areSameSuffixes(sem2.getSuffixTokens())) return false;
+
+            if (!Objects.equals(sem1.getMajor(), sem2.getMajor())) return false;
+
+            if (sem2.getMinor() == null) return true;
+            if (!Objects.equals(sem1.getMinor(), sem2.getMinor())) return false;
+
+            if (sem2.getPatch() == null) return true;
+            if (!Objects.equals(sem1.getPatch(), sem2.getPatch())) return false;
+        }
+
         // Compare those new versions
         return sem1.isEqualTo(sem2);
     }
@@ -354,12 +378,6 @@ public class Semver implements Comparable<Semver> {
      * @return true if the current version equals the provided version
      */
     public boolean isEqualTo(Semver version) {
-        if (this.type == SemverType.NPM) {
-            if (this.getMajor() != version.getMajor()) return false;
-            if (version.getMinor() == null) return true;
-            if (version.getPatch() == null) return true;
-        }
-
         return this.equals(version);
     }
 
@@ -441,6 +459,24 @@ public class Semver implements Comparable<Semver> {
 
     public Semver withIncPatch(int increment) {
         return this.withInc(0, 0, increment);
+    }
+    
+    public Semver withIncSuffix(int index) {
+    	return withIncSuffix(index, 1);
+    }
+
+    public Semver withIncSuffix(int index, int increment) {
+    	if(suffixTokens.length <= index) throw new SemverException("No suffix at index "+index);
+    	try {
+    		Integer token = Integer.valueOf(suffixTokens[index]);
+    		token+=increment;
+    		String[] newSuffix = Arrays.copyOf(suffixTokens,suffixTokens.length);
+    		newSuffix[index] = token.toString();
+    		return with(major,minor,patch,newSuffix,build);
+    	}
+    	catch(NumberFormatException nfe) {
+    		throw new SemverException("Suffix was not integer at index "+index);
+    	}
     }
 
     private Semver withInc(int majorInc, int minorInc, int patchInc) {
@@ -542,7 +578,7 @@ public class Semver implements Comparable<Semver> {
 
     @Override public int compareTo(Semver version) {
         if (this.isGreaterThan(version)) return 1;
-        else if(this.isLowerThan(version)) return -1;
+        else if (this.isLowerThan(version)) return -1;
         return 0;
     }
 

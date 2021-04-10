@@ -13,6 +13,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -119,6 +120,15 @@ public class SemverTest {
         assertEquals(build, semver.getBuild());
     }
 
+    @Test public void satisfies_unqualified_exception() {
+        String version = "1.0";
+        Semver semver = new Semver(version, Semver.SemverType.LOOSE);
+        try {
+            semver.satisfies("1.0");
+            fail("satisfies() did not throw as expected.");
+        } catch (SemverException e) {}
+    }
+
     @Test public void statisfies_works_will_all_the_types() {
         // Used to prevent bugs when we add a new type
         for (Semver.SemverType type : Semver.SemverType.values()) {
@@ -185,6 +195,27 @@ public class SemverTest {
         String version2 = "1.0.0+sdgfsdgsdhsdfgdsfgf";
         assertFalse(semver.isEqualTo(version2));
         assertTrue(semver.isEquivalentTo(version2));
+    }
+
+    @Test public void isEquivalentTo_isEqualTo_without_patch() {
+        Semver semver = new Semver("1.2.3", Semver.SemverType.NPM);
+        String version2 = "1.2";
+        assertFalse(semver.isEqualTo(version2));
+        assertTrue(semver.isEquivalentTo(version2));
+    }
+
+    @Test public void isEqualTo_symmetric() {
+        Semver semver1 = new Semver("1.2.3", Semver.SemverType.NPM);
+        Semver semver2 = new Semver("1.2", Semver.SemverType.NPM);
+        assertFalse(semver1.isEqualTo(semver2));
+        assertFalse(semver2.isEqualTo(semver1));
+    }
+
+    @Test public void isEquivalentTo_asymmetric() {
+        Semver semver1 = new Semver("1.2.3", Semver.SemverType.NPM);
+        Semver semver2 = new Semver("1.2", Semver.SemverType.NPM);
+        assertTrue(semver1.isEquivalentTo(semver2));
+        assertFalse(semver2.isEquivalentTo(semver1));
     }
 
     @Test public void statisfies_calls_the_requirement() {
@@ -274,6 +305,40 @@ public class SemverTest {
     @Test public void nextPatch_test() {
         Semver semver = new Semver("1.2.3-beta.4+sha123456789");
         semver.nextPatch().isEqualTo("1.2.4");
+    }
+    
+    @Test public void withIncSuffix_test() {
+    	Semver semver = new Semver("1.2.3-Draft.1");
+    	Semver result = semver.withIncSuffix(1);
+    	assertEquals("1.2.3-Draft.2", result.toString());
+    }
+    
+    @Test public void withIncSuffix_test_reverse() {
+    	Semver semver = new Semver("1.2.3-1.draft.2");
+    	Semver result = semver.withIncSuffix(0);
+    	assertEquals("1.2.3-2.draft.2", result.toString());
+    }
+    
+    @Test public void withIncSuffix_test_multiple() {
+    	Semver semver = new Semver("1.2.3-1.2");
+    	Semver result = semver.withIncSuffix(1).withIncSuffix(0);
+    	assertEquals("1.2.3-2.3", result.toString());
+    }
+    
+    @Test public void withIncSuffix_test_increment() {
+    	Semver semver = new Semver("1.2.3-draft.1");
+    	Semver result = semver.withIncSuffix(1,3);
+    	assertEquals("1.2.3-draft.4", result.toString());
+    }
+    
+    @Test(expected = SemverException.class) public void withIncSuffix_test_indexerror() {
+    	Semver semver = new Semver("1.2.3-Draft.1");
+    	semver.withIncSuffix(2);
+    }
+    
+    @Test(expected = SemverException.class) public void withIncSuffix_test_formaterror() {
+    	Semver semver = new Semver("1.2.3-Draft.B");
+    	semver.withIncSuffix(1);
     }
 
     @Test public void toStrict_test() {
