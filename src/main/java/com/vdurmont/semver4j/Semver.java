@@ -55,6 +55,10 @@ public class Semver implements Comparable<Semver> {
                 mainTokens = tokens[0].split("\\.");
             }
 
+            if (mainTokens.length > 3) {
+                throw new SemverException("There should be no more than 3 levels: " + value);
+            }
+
             try {
                 this.major = Integer.valueOf(mainTokens[0]);
             } catch (NumberFormatException e) {

@@ -367,4 +367,8 @@ public class SemverTest {
         assertFalse(new Semver("0.1.2+sHa.0nSFGKjkjsdf").isStable());
         assertFalse(new Semver("0.1.2").isStable());
     }
+
+    @Test(expected = SemverException.class) public void maxLevels_test() {
+        new Semver("1.2.3.4");
+    }
 }
