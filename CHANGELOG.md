@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.0.0
+- Check there are max 3 levels in a version
+
 ## 3.1.0
 
 - Fix NPM loose comparisons (thanks @kmck)
